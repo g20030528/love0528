@@ -787,6 +787,184 @@
             color: rgba(255, 255, 255, 0.8);
         }
         
+        .letter-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .letter-modal-content {
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 600px;
+        }
+        
+        .letter-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .letter-modal-header h3 {
+            color: #fff;
+            font-size: 1.25rem;
+            margin: 0;
+        }
+        
+        .letter-modal-body textarea {
+            width: 100%;
+            min-height: 150px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            color: #fff;
+            font-size: 1rem;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        
+        .letter-modal-body textarea:focus {
+            outline: none;
+            border-color: rgba(255, 107, 157, 0.5);
+        }
+        
+        .letter-modal-body textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .letter-modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .notification-panel, .stats-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .notification-panel > div, .stats-panel > div {
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .notification-header, .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .notification-header h3, .stats-header h3 {
+            color: #fff;
+            font-size: 1.25rem;
+            margin: 0;
+        }
+        
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .notification-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #ff6b9d;
+        }
+        
+        .notification-item.unread {
+            background: rgba(255, 107, 157, 0.1);
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        
+        .notification-time {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .stats-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b9d, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 8px;
+        }
+        
+        .like-btn, .favorite-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .like-btn:hover, .favorite-btn:hover {
+            background: rgba(255, 107, 157, 0.3);
+        }
+        
+        .like-btn.liked, .favorite-btn.favorited {
+            background: rgba(255, 107, 157, 0.3);
+        }
+        
         .error-message {
             color: #ff4757;
             font-size: 0.85rem;
@@ -1254,6 +1432,296 @@
             background: linear-gradient(135deg, rgba(255, 107, 157, 0.3), rgba(192, 132, 252, 0.3));
             padding: 8px 16px;
             border-radius: 12px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .add-letter-btn {
+            background: linear-gradient(135deg, #ff6b9d, #c084fc);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .add-letter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(255, 107, 157, 0.4);
+        }
+        
+        .add-user-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+        
+        .add-user-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+        }
+        
+        .add-user-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .add-user-content {
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .add-user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .add-user-header h3 {
+            color: #fff;
+            font-size: 1.25rem;
+            margin: 0;
+        }
+        
+        .add-user-body .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .add-user-body input[type="text"],
+        .add-user-body input[type="password"],
+        .add-user-body select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .add-user-body input:focus,
+        .add-user-body select:focus {
+            outline: none;
+            border-color: rgba(255, 107, 157, 0.5);
+        }
+        
+        .add-user-body input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .permission-checkboxes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .permission-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .permission-checkbox-label:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .permission-checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #ff6b9d;
+        }
+        
+        .permission-checkbox-label span {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+        
+        .add-user-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .add-user-footer .cancel-btn {
+            flex: 1;
+        }
+        
+        .add-user-footer .confirm-btn {
+            flex: 2;
+        }
+        
+        .letters-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        
+        .letter-tab {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .letter-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .letter-tab.active {
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.3), rgba(192, 132, 252, 0.3));
+            color: #fff;
+        }
+        
+        .letters-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .letter-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .letter-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-4px);
+            border-color: rgba(255, 107, 157, 0.3);
+        }
+        
+        .letter-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .letter-card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        
+        .letter-privacy {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .letter-privacy.public {
+            background: rgba(16, 185, 129, 0.8);
+            color: #fff;
+        }
+        
+        .letter-privacy.vip {
+            background: rgba(251, 191, 36, 0.8);
+            color: #1a1a2e;
+        }
+        
+        .letter-privacy.super-vip {
+            background: rgba(139, 92, 246, 0.8);
+            color: #fff;
+        }
+        
+        .letter-preview {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0 0 16px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .letter-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .letter-date {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .letter-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .letter-action-btn {
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .letter-action-btn:hover {
+            background: rgba(255, 107, 157, 0.3);
+        }
+        
+        .voice-privacy-selector select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 8px 16px;
+            color: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        .voice-privacy-selector select option {
+            background: #1a1a2e;
+            color: #fff;
         }
         
         .voice-controls {
@@ -1833,8 +2301,8 @@
     <div class="login-container" id="login-container">
         <div class="login-box">
             <div class="login-header">
-                <div class="login-icon">💌</div>
-                <h1>给她的一封信</h1>
+                <div class="login-icon">📜</div>
+                <h1>温予皆过往</h1>
                 <p>欢迎回来</p>
             </div>
             <div class="form-group">
@@ -1903,6 +2371,79 @@
             </div>
         </div>
         
+        <div class="letter-modal" id="letter-modal" style="display: none;">
+            <div class="letter-modal-content">
+                <div class="letter-modal-header">
+                    <h3 id="letter-modal-title">新建信件</h3>
+                    <button class="close-btn" onclick="closeLetterModal()">×</button>
+                </div>
+                <div class="letter-modal-body">
+                    <div class="form-group">
+                        <label>信件标题</label>
+                        <input type="text" id="letter-title" placeholder="请输入信件标题">
+                    </div>
+                    <div class="form-group">
+                        <label>信件内容</label>
+                        <textarea id="letter-content-input" placeholder="写下你想说的话..." rows="8"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>访问权限</label>
+                        <div class="privacy-options">
+                            <label class="privacy-option">
+                                <input type="radio" name="letter-privacy" value="0" checked>
+                                <span>🔓 公开</span>
+                            </label>
+                            <label class="privacy-option">
+                                <input type="radio" name="letter-privacy" value="1">
+                                <span>⭐ 会员</span>
+                            </label>
+                            <label class="privacy-option">
+                                <input type="radio" name="letter-privacy" value="2">
+                                <span>⭐⭐ 超级会员</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="letter-modal-footer">
+                    <button class="cancel-btn" onclick="closeLetterModal()">取消</button>
+                    <button class="confirm-btn" id="letter-save-btn" onclick="saveLetter()">保存</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notification-panel" id="notification-panel" style="display: none;">
+            <div class="notification-header">
+                <h3>🔔 通知</h3>
+                <button class="close-btn" onclick="closeNotifications()">×</button>
+            </div>
+            <div class="notification-list" id="notification-list"></div>
+        </div>
+        
+        <div class="stats-panel" id="stats-panel" style="display: none;">
+            <div class="stats-header">
+                <h3>📊 数据统计</h3>
+                <button class="close-btn" onclick="closeStats()">×</button>
+            </div>
+            <div class="stats-content">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-visitors">0</div>
+                    <div class="stat-label">总访客数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-messages">0</div>
+                    <div class="stat-label">留言数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-images">0</div>
+                    <div class="stat-label">图片数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-videos">0</div>
+                    <div class="stat-label">视频数</div>
+                </div>
+            </div>
+        </div>
+        
         <div class="admin-panel" id="admin-panel">
             <button class="back-btn" onclick="logout()">退出登录</button>
             <div class="admin-header">
@@ -1912,7 +2453,10 @@
             </div>
             <div class="admin-content">
                 <div class="admin-section">
-                    <h2>待审核注册申请</h2>
+                    <div class="section-header">
+                        <h2>待审核注册申请</h2>
+                        <button class="add-user-btn" onclick="openAddUserModal()">+ 添加用户</button>
+                    </div>
                     <div class="pending-list" id="pending-list">
                         <div class="no-pending">暂无待审核的注册申请</div>
                     </div>
@@ -1938,6 +2482,62 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="add-user-modal" id="add-user-modal" style="display: none;">
+            <div class="add-user-content">
+                <div class="add-user-header">
+                    <h3>添加用户</h3>
+                    <button class="close-btn" onclick="closeAddUserModal()">×</button>
+                </div>
+                <div class="add-user-body">
+                    <div class="form-group">
+                        <label>用户名</label>
+                        <input type="text" id="admin-add-username" placeholder="请输入用户名（中文，最多4个字符）">
+                    </div>
+                    <div class="form-group">
+                        <label>密码</label>
+                        <input type="password" id="admin-add-password" placeholder="请输入密码（4位数字）">
+                    </div>
+                    <div class="form-group">
+                        <label>初始权限</label>
+                        <div class="permission-checkboxes">
+                            <label class="permission-checkbox-label">
+                                <input type="checkbox" id="perm-view" checked disabled>
+                                <span>查看权限</span>
+                            </label>
+                            <label class="permission-checkbox-label">
+                                <input type="checkbox" id="perm-edit">
+                                <span>编辑权限</span>
+                            </label>
+                            <label class="permission-checkbox-label">
+                                <input type="checkbox" id="perm-upload">
+                                <span>上传权限</span>
+                            </label>
+                            <label class="permission-checkbox-label">
+                                <input type="checkbox" id="perm-visitor">
+                                <span>访客记录</span>
+                            </label>
+                            <label class="permission-checkbox-label">
+                                <input type="checkbox" id="perm-backup">
+                                <span>备份导出</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>会员等级</label>
+                        <select id="admin-add-viplevel">
+                            <option value="0">普通用户</option>
+                            <option value="1">⭐ 会员</option>
+                            <option value="2">⭐⭐ 超级会员</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="add-user-footer">
+                    <button class="cancel-btn" onclick="closeAddUserModal()">取消</button>
+                    <button class="confirm-btn" onclick="adminAddUser()">确认添加</button>
                 </div>
             </div>
         </div>
@@ -1981,22 +2581,45 @@
         </div>
         
         <div class="main-content">
-            <div class="letter">
-                <div class="letter-content" id="letter-content">亲爱的你：
-
-分开的这些日子里，我每天都在想你。每一个安静的夜晚，每一个熟悉的街角，都会让我想起我们曾经一起走过的路。我知道，是我的幼稚和不懂珍惜，让你失望了。
-
-我常常在想，如果当初我能更成熟一点，更懂得包容和理解，我们是不是就不会走到今天这一步。你是我生命中最特别的存在，是我想要用一生去守护的人。
-
-我知道现在说这些可能已经太晚，但我真的无法放下你。我愿意改变，愿意为了你变成更好的人。如果你还愿意给我一次机会，我一定会用我的余生去证明，你选择我，是正确的决定。
-
-                                                                                                    永远爱你的人</div>
-                <button class="edit-btn" id="edit-letter-btn" onclick="openEditLetterModal()">✏️ 编辑内容</button>
+            <div class="letters-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>📜 信件</span>
+                    </div>
+                    <button class="add-letter-btn" id="add-letter-btn" onclick="openAddLetterModal()">+ 新建信件</button>
+                </div>
+                <div class="letters-tabs" id="letters-tabs">
+                    <div class="letter-tab active" data-id="all">全部信件</div>
+                </div>
+                <div class="letters-container" id="letters-container">
+                    <div class="letter-card" data-id="default">
+                        <div class="letter-card-header">
+                            <h3>亲爱的你</h3>
+                            <span class="letter-privacy public">公开</span>
+                        </div>
+                        <p class="letter-preview">分开的这些日子里，我每天都在想你...</p>
+                        <div class="letter-card-footer">
+                            <span class="letter-date">2024-01-15</span>
+                            <div class="letter-actions">
+                                <button class="letter-action-btn" onclick="openEditLetterModal('default')">编辑</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="voice-section">
-                <div class="section-title">
-                    <span>🎤 语音留言</span>
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>🎤 语音留言</span>
+                    </div>
+                    <div class="voice-privacy-selector">
+                        <select id="voice-privacy" onchange="updateVoicePrivacy()">
+                            <option value="0">🔓 公开</option>
+                            <option value="1">⭐ 会员</option>
+                            <option value="2">⭐⭐ 超会</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="voice-controls">
                     <button class="voice-btn record" id="record-btn" onclick="toggleRecording()">
@@ -2120,6 +2743,7 @@
         var isRecording = false;
         var uploadFile = null;
         var uploadType = '';
+        var voicePrivacy = 0;
         var mediaRecorder = null;
         var audioChunks = [];
         var bgm = document.getElementById('bgm');
@@ -2615,6 +3239,157 @@
             }
         }
         
+        var editingLetterId = null;
+        
+        function openAddLetterModal() {
+            editingLetterId = null;
+            document.getElementById('letter-modal-title').textContent = '新建信件';
+            document.getElementById('letter-title').value = '';
+            document.getElementById('letter-content-input').value = '';
+            document.querySelector('input[name="letter-privacy"][value="0"]').checked = true;
+            document.getElementById('letter-modal').style.display = 'flex';
+        }
+        
+        function openEditLetterModal(letterId) {
+            editingLetterId = letterId;
+            document.getElementById('letter-modal-title').textContent = '编辑信件';
+            
+            if (letterId === 'default') {
+                document.getElementById('letter-title').value = '亲爱的你';
+                document.getElementById('letter-content-input').value = '亲爱的你：\n\n分开的这些日子里，我每天都在想你。每一个安静的夜晚，每一个熟悉的街角，都会让我想起我们曾经一起走过的路。我知道，是我的幼稚和不懂珍惜，让你失望了。\n\n我常常在想，如果当初我能更成熟一点，更懂得包容和理解，我们是不是就不会走到今天这一步。你是我生命中最特别的存在，是我想要用一生去守护的人。\n\n我知道现在说这些可能已经太晚，但我真的无法放下你。我愿意改变，愿意为了你变成更好的人。如果你还愿意给我一次机会，我一定会用我的余生去证明，你选择我，是正确的决定。\n\n永远爱你的人';
+            }
+            
+            document.getElementById('letter-modal').style.display = 'flex';
+        }
+        
+        function closeLetterModal() {
+            document.getElementById('letter-modal').style.display = 'none';
+            editingLetterId = null;
+        }
+        
+        function saveLetter() {
+            var title = document.getElementById('letter-title').value.trim();
+            var content = document.getElementById('letter-content-input').value.trim();
+            var privacyRadios = document.querySelectorAll('input[name="letter-privacy"]');
+            var privacyLevel = 0;
+            
+            privacyRadios.forEach(function(radio) {
+                if (radio.checked) {
+                    privacyLevel = parseInt(radio.value);
+                }
+            });
+            
+            if (!title || !content) {
+                showToast('请填写标题和内容');
+                return;
+            }
+            
+            var letter = {
+                id: editingLetterId || Date.now().toString(),
+                title: title,
+                content: content,
+                privacy: privacyLevel,
+                date: new Date().toISOString().split('T')[0],
+                likes: 0,
+                favorites: 0
+            };
+            
+            closeLetterModal();
+            showToast('信件已保存');
+            
+            addLetterCard(letter);
+        }
+        
+        function addLetterCard(letter) {
+            var container = document.getElementById('letters-container');
+            var card = document.createElement('div');
+            card.className = 'letter-card';
+            card.dataset.id = letter.id;
+            
+            card.innerHTML = `
+                <div class="letter-card-header">
+                    <h3>${letter.title}</h3>
+                    <span class="letter-privacy ${getPrivacyClass(letter.privacy)}">${getPrivacyText(letter.privacy)}</span>
+                </div>
+                <p class="letter-preview">${letter.content.substring(0, 50)}...</p>
+                <div class="letter-card-footer">
+                    <span class="letter-date">${letter.date}</span>
+                    <div class="letter-actions">
+                        <button class="letter-action-btn" onclick="openEditLetterModal('${letter.id}')">编辑</button>
+                        <button class="letter-action-btn" onclick="deleteLetter('${letter.id}')">删除</button>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        }
+        
+        function deleteLetter(letterId) {
+            if (!confirm('确定要删除这封信件吗？')) return;
+            
+            var card = document.querySelector(`.letter-card[data-id="${letterId}"]`);
+            if (card) {
+                card.remove();
+                showToast('信件已删除');
+            }
+        }
+        
+        function openNotifications() {
+            document.getElementById('notification-panel').style.display = 'flex';
+            loadNotifications();
+        }
+        
+        function closeNotifications() {
+            document.getElementById('notification-panel').style.display = 'none';
+        }
+        
+        function loadNotifications() {
+            var list = document.getElementById('notification-list');
+            var notifications = [
+                { id: 1, title: '新留言', content: '黄倩 发表了新留言', time: '10分钟前', unread: true },
+                { id: 2, title: '新访客', content: '来自北京的访客访问了网站', time: '30分钟前', unread: true },
+                { id: 3, title: '注册申请', content: '新用户 张三 提交了注册申请', time: '1小时前', unread: false },
+                { id: 4, title: '媒体上传', content: '龚建东 上传了新图片', time: '2小时前', unread: false }
+            ];
+            
+            list.innerHTML = notifications.map(function(n) {
+                return `
+                    <div class="notification-item ${n.unread ? 'unread' : ''}">
+                        <div class="notification-title">${n.title}</div>
+                        <div style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">${n.content}</div>
+                        <div class="notification-time">${n.time}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function openStats() {
+            document.getElementById('stats-panel').style.display = 'flex';
+            loadStats();
+        }
+        
+        function closeStats() {
+            document.getElementById('stats-panel').style.display = 'none';
+        }
+        
+        function loadStats() {
+            document.getElementById('stat-visitors').textContent = '128';
+            document.getElementById('stat-messages').textContent = '24';
+            document.getElementById('stat-images').textContent = '45';
+            document.getElementById('stat-videos').textContent = '8';
+        }
+        
+        function toggleLike(element) {
+            element.classList.toggle('liked');
+            var count = element.querySelector('.count');
+            var current = parseInt(count.textContent);
+            count.textContent = element.classList.contains('liked') ? current + 1 : current - 1;
+        }
+        
+        function toggleFavorite(element) {
+            element.classList.toggle('favorited');
+        }
+        
         function showBatchPrivacyModal(event) {
             var files = event.target.files;
             if (!files || files.length === 0) return;
@@ -2700,6 +3475,10 @@
             }
         }
         
+        function updateVoicePrivacy() {
+            voicePrivacy = parseInt(document.getElementById('voice-privacy').value);
+        }
+        
         function createStars() {
             var starsContainer = document.getElementById('stars');
             for (var i = 0; i < 50; i++) {
@@ -2728,7 +3507,12 @@
             }
             
             if (USERS[username] && USERS[username].password === password) {
-                currentUser = { username: username, role: USERS[username].role };
+                currentUser = {
+                    username: username,
+                    role: USERS[username].role,
+                    permissions: USERS[username].permissions || { view: true, edit: false, upload: false, visitor: false, backup: false },
+                    vipLevel: USERS[username].vipLevel || 0
+                };
                 saveToStorage(STORAGE_KEYS.LOGGED_USER, currentUser);
                 
                 if (currentUser.role === 'admin') {
@@ -3201,6 +3985,71 @@
                 2: '⭐⭐ 超级会员'
             };
             showToast('✅ ' + username + '已设置为' + levelNames[level]);
+        }
+        
+        function openAddUserModal() {
+            document.getElementById('admin-add-username').value = '';
+            document.getElementById('admin-add-password').value = '';
+            document.getElementById('perm-edit').checked = false;
+            document.getElementById('perm-upload').checked = false;
+            document.getElementById('perm-visitor').checked = false;
+            document.getElementById('perm-backup').checked = false;
+            document.getElementById('admin-add-viplevel').value = '0';
+            document.getElementById('add-user-modal').style.display = 'flex';
+        }
+        
+        function closeAddUserModal() {
+            document.getElementById('add-user-modal').style.display = 'none';
+        }
+        
+        function adminAddUser() {
+            var username = document.getElementById('admin-add-username').value.trim();
+            var password = document.getElementById('admin-add-password').value.trim();
+            var editPerm = document.getElementById('perm-edit').checked;
+            var uploadPerm = document.getElementById('perm-upload').checked;
+            var visitorPerm = document.getElementById('perm-visitor').checked;
+            var backupPerm = document.getElementById('perm-backup').checked;
+            var vipLevel = parseInt(document.getElementById('admin-add-viplevel').value);
+            
+            if (!username) {
+                showToast('请输入用户名');
+                return;
+            }
+            
+            if (!/^[\u4e00-\u9fa5]{1,4}$/.test(username)) {
+                showToast('用户名必须是中文，最多4个字符');
+                return;
+            }
+            
+            if (!password || !/^\d{4}$/.test(password)) {
+                showToast('密码必须是4位数字');
+                return;
+            }
+            
+            if (USERS[username]) {
+                showToast('用户名已存在');
+                return;
+            }
+            
+            USERS[username] = {
+                password: password,
+                role: 'viewer',
+                permissions: {
+                    view: true,
+                    edit: editPerm,
+                    upload: uploadPerm,
+                    visitor: visitorPerm,
+                    backup: backupPerm
+                },
+                vipLevel: vipLevel
+            };
+            
+            saveUsersToCloud();
+            loadUsers();
+            closeAddUserModal();
+            
+            var vipText = vipLevel === 2 ? '⭐⭐ 超级会员' : vipLevel === 1 ? '⭐ 会员' : '普通用户';
+            showToast('✅ 用户 ' + username + ' 已添加，等级: ' + vipText);
         }
         
         function deleteUser(username) {
@@ -3720,7 +4569,8 @@
                     id: Date.now().toString(),
                     data: result.url,
                     key: result.key,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    privacy: voicePrivacy
                 };
                 
                 await saveVoiceToDB(newMessage);
@@ -3729,10 +4579,26 @@
                 var item = document.createElement('div');
                 item.className = 'voice-item';
                 item.dataset.id = newMessage.id;
+                item.dataset.privacy = voicePrivacy;
+                
+                var userVipLevel = currentUser ? (currentUser.vipLevel || 0) : 0;
+                var canAccess = voicePrivacy <= userVipLevel || currentUser.role === 'editor';
                 
                 var audio = document.createElement('audio');
                 audio.controls = true;
                 audio.src = result.url;
+                
+                if (!canAccess) {
+                    audio.style.display = 'none';
+                    var lockOverlay = document.createElement('div');
+                    lockOverlay.className = 'locked-overlay';
+                    lockOverlay.innerHTML = '<span class="lock-icon">🔒</span><span class="lock-text">' + getPrivacyText(voicePrivacy) + '</span>';
+                    item.appendChild(lockOverlay);
+                }
+                
+                var privacyBadge = document.createElement('span');
+                privacyBadge.className = 'media-privacy-badge ' + getPrivacyClass(voicePrivacy);
+                privacyBadge.textContent = getPrivacyText(voicePrivacy);
                 
                 var deleteBtn = document.createElement('button');
                 deleteBtn.className = 'delete-btn';
@@ -3745,11 +4611,12 @@
                 };
                 
                 item.appendChild(audio);
+                item.appendChild(privacyBadge);
                 item.appendChild(deleteBtn);
                 voiceList.insertBefore(item, voiceList.firstChild);
                 
                 syncAllDataToCloud();
-                showToast('语音上传成功');
+                showToast('语音上传成功，权限: ' + getPrivacyText(voicePrivacy));
             } else {
                 showToast('语音上传失败');
             }
