@@ -1217,7 +1217,8 @@
                 console.log('媒体文件数量:', data.mediaItems ? data.mediaItems.length : 0);
                 console.log('语音消息数量:', data.voiceMessages ? data.voiceMessages.length : 0);
                 
-                await ossClient.put(CLOUD_CONFIG.dataFile, jsonString);
+                var blob = new Blob([jsonString], { type: 'application/json' });
+                await ossClient.put(CLOUD_CONFIG.dataFile, blob);
                 console.log('✓ 数据同步到云端成功');
                 return true;
             } catch (e) {
