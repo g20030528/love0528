@@ -1,0 +1,14 @@
+[build]
+  command = "echo 'Build completed'"
+  publish = "."
+
+[[redirects]]
+  from = "/*"
+  to = "/love-letter.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Type = "text/html; charset=utf-8"
+    Access-Control-Allow-Origin = "*"

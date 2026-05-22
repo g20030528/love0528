@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情书</title>
+    <script src="https://gosspublic.alicdn.com/aliyun-oss-sdk-6.18.1.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--min-opacity); transform: scale(1); }
+            50% { opacity: var(--max-opacity); transform: scale(1.2); }
+        }
+        
+        .login-container {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 48px;
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.15), rgba(192, 132, 252, 0.15));
+            border-radius: 50%;
+            animation: float 15s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-20px, 20px) rotate(180deg); }
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #ff6b9d, #c084fc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
+        }
+        
+        .login-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .login-header p {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 16px 20px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .form-group input:focus {
+            border-color: rgba(255, 107, 157, 0.5);
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+        }
+        
+        .form-hint {
+            font-size: 0.75rem;
+            color: rgba(255, 107, 157, 0.8);
+            margin-top: 6px;
+            display: block;
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ff6b9d, #c084fc);
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(255, 107, 157, 0.5);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .error-message {
+            color: #ff4757;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 16px;
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .main-container {
+            display: none;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .main-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        .header .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #ff6b9d, #c084fc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: 0 10px 40px rgba(255, 107, 157, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b9d, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+        }
+        
+        .user-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+        }
+        
+        .user-info .role {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(255, 107, 157, 0.2);
+            color: #ff6b9d;
+        }
+        
+        .user-info .viewer-role {
+            background: rgba(100, 200, 255, 0.2);
+            color: #64c8ff;
+        }
+        
+        .cloud-status {
+            font-size: 1rem;
+            padding: 4px 8px;
+            border-radius: 8px;
+            background: rgba(255, 107, 157, 0.1);
+            color: #ff6b9d;
+            transition: all 0.3s ease;
+        }
+        
+        .cloud-status.connected {
+            background: rgba(72, 187, 120, 0.1);
+            color: #48bb78;
+        }
+        
+        .cloud-status.disconnected {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+        }
+        
+        .sync-btn {
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: rgba(100, 200, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .sync-btn:hover {
+            background: rgba(100, 200, 255, 0.2);
+            transform: rotate(180deg);
+        }
+        
+        .logout-btn {
+            font-size: 0.8rem;
+            color: rgba(255, 71, 87, 0.8);
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: rgba(255, 71, 87, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 71, 87, 0.2);
+        }
+        
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 90px;
+            background: rgba(255, 107, 157, 0.9);
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .music-control:hover {
+            transform: scale(1.1);
+        }
+        
+        .music-control.playing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4); }
+            50% { box-shadow: 0 4px 30px rgba(255, 107, 157, 0.8); }
+        }
+        
+        .music-control svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+        
+        .music-change-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 160px;
+            background: rgba(192, 132, 252, 0.9);
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(192, 132, 252, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .music-change-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .music-change-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+        
+        .letter {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px;
+            line-height: 2.2;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease 0.1s both;
+            position: relative;
+        }
+        
+        .letter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 157, 0.5), transparent);
+        }
+        
+        .letter-content {
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.9);
+            white-space: pre-wrap;
+            line-height: 2.2;
+        }
+        
+        .edit-btn {
+            background: rgba(255, 107, 157, 0.1);
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 10px;
+            padding: 10px 20px;
+            color: #ff6b9d;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .edit-btn:hover {
+            background: rgba(255, 107, 157, 0.2);
+        }
+        
+        .edit-btn.hidden {
+            display: none;
+        }
+        
+        .voice-section {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .section-title span:first-child {
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.3), rgba(192, 132, 252, 0.3));
+            padding: 8px 16px;
+            border-radius: 12px;
+        }
+        
+        .voice-controls {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .voice-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .voice-btn.record {
+            background: linear-gradient(135deg, #ff6b9d, #ff4757);
+            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+        }
+        
+        .voice-btn.record:hover {
+            transform: scale(1.1);
+        }
+        
+        .voice-btn.record.recording {
+            animation: record-pulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes record-pulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4); }
+            50% { box-shadow: 0 4px 30px rgba(255, 71, 87, 0.8); }
+        }
+        
+        .voice-btn svg {
+            width: 32px;
+            height: 32px;
+            fill: #fff;
+        }
+        
+        .voice-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .voice-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .voice-item audio {
+            flex: 1;
+            height: 40px;
+        }
+        
+        .gallery-section {
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease 0.3s both;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        
+        .gallery-item {
+            aspect-ratio: 1;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-4px);
+        }
+        
+        .gallery-item img,
+        .gallery-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .gallery-item.upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            gap: 8px;
+        }
+        
+        .gallery-item.upload-placeholder:hover {
+            border-color: rgba(255, 107, 157, 0.5);
+            background: rgba(255, 107, 157, 0.1);
+        }
+        
+        .gallery-item.upload-placeholder svg {
+            width: 32px;
+            height: 32px;
+            fill: rgba(255, 255, 255, 0.4);
+        }
+        
+        .gallery-item.upload-placeholder span {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .gallery-item.hidden {
+            display: none;
+        }
+        
+        .gallery-item .delete-media {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 71, 87, 0.9);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item:hover .delete-media {
+            display: flex;
+        }
+        
+        .gallery-item .delete-media:hover {
+            transform: scale(1.1);
+            background: rgba(255, 71, 87, 1);
+        }
+        
+        .gallery-item .delete-media svg {
+            width: 16px;
+            height: 16px;
+            fill: #fff;
+        }
+        
+        #image-upload,
+        #video-upload {
+            display: none;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px;
+            animation: fadeInUp 0.6s ease 0.4s both;
+        }
+        
+        .footer p {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.98), rgba(22, 33, 62, 0.98));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        
+        .modal-content textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 16px;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            outline: none;
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .modal-content input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 16px;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            outline: none;
+        }
+        
+        .modal-content textarea:focus,
+        .modal-content input:focus {
+            border-color: rgba(255, 107, 157, 0.5);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-actions .cancel-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        .modal-actions .confirm-btn {
+            background: linear-gradient(135deg, #ff6b9d, #c084fc);
+            color: #fff;
+        }
+        
+        .modal-actions button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .media-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+        
+        .media-modal.show {
+            display: flex;
+        }
+        
+        .media-modal img,
+        .media-modal video {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+        
+        .close-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .close-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 107, 157, 0.9);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 10px;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .login-box {
+                padding: 32px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .letter {
+                padding: 24px;
+            }
+            
+            .music-control,
+            .music-change-btn {
+                width: 48px;
+                height: 48px;
+            }
+            
+            .user-info {
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="login-container" id="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <div class="login-icon">�</div>
+                <h1>系统登录</h1>
+                <p>请输入账户信息</p>
+            </div>
+            <div class="form-group">
+                <label>账户</label>
+                <input type="text" id="username" placeholder="请输入账户">
+                <span class="form-hint">提示: 姓名 (中文)</span>
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="password" placeholder="请输入密码">
+                <span class="form-hint">提示: 生日 (4位数)</span>
+            </div>
+            <button class="login-btn" onclick="handleLogin()">登 录</button>
+            <div class="error-message" id="login-error">账户名或密码错误，请重试</div>
+        </div>
+    </div>
+    
+    <audio id="bgm" loop></audio>
+    
+    <div class="music-change-btn" id="music-change-btn" onclick="openMusicModal()">
+        <svg viewBox="0 0 24 24">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+        </svg>
+    </div>
+    <div class="music-control" id="music-btn" onclick="toggleMusic()">
+        <svg id="music-icon" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+        </svg>
+    </div>
+    
+    <div class="main-container" id="main-container">
+        <div class="user-info" id="user-info">
+            <span id="user-name">用户</span>
+            <span class="role" id="user-role">查看者</span>
+            <span class="cloud-status" id="cloud-status" title="云端状态">☁️</span>
+            <span class="sync-btn" id="sync-btn" onclick="syncAllDataToCloud()">🔄</span>
+            <span class="logout-btn" onclick="logout()">退出登录</span>
+        </div>
+        
+        <div class="main-content">
+            <div class="letter">
+                <div class="letter-content" id="letter-content">亲爱的你：
+
+分开的这些日子里，我每天都在想你。每一个安静的夜晚，每一个熟悉的街角，都会让我想起我们曾经一起走过的路。我知道，是我的幼稚和不懂珍惜，让你失望了。
+
+我常常在想，如果当初我能更成熟一点，更懂得包容和理解，我们是不是就不会走到今天这一步。你是我生命中最特别的存在，是我想要用一生去守护的人。
+
+我知道现在说这些可能已经太晚，但我真的无法放下你。我愿意改变，愿意为了你变成更好的人。如果你还愿意给我一次机会，我一定会用我的余生去证明，你选择我，是正确的决定。
+
+                                                                                                    永远爱你的人</div>
+                <button class="edit-btn" id="edit-letter-btn" onclick="openEditLetterModal()">✏️ 编辑内容</button>
+            </div>
+            
+            <div class="voice-section">
+                <div class="section-title">
+                    <span>🎤 语音留言</span>
+                </div>
+                <div class="voice-controls">
+                    <button class="voice-btn record" id="record-btn" onclick="toggleRecording()">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 2.99-1.34 2.99-3S13.66 8 12 8 9 9.34 9 11s1.34 3 3 3zm5.66-1.34l-1.75-1.75c-.78-.78-2.05-.78-2.83 0L7 15.95c-.78.78-.78 2.05 0 2.83l1.75 1.75c.78.78 2.05.78 2.83 0l6.66-6.66c.79-.78.79-2.04 0-2.83z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="voice-list" id="voice-list"></div>
+            </div>
+            
+            <div class="gallery-section">
+                <div class="section-title">
+                    <span>📸 记录</span>
+                </div>
+                <div class="gallery" id="gallery-container">
+                    <div class="gallery-item" onclick="openMediaViewer(this, 'image')">
+                        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop" alt="回忆1">
+                        <button class="delete-media" onclick="deleteSampleImage(this)"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+                    </div>
+                    <div class="gallery-item" onclick="openMediaViewer(this, 'image')">
+                        <img src="https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?w=400&h=400&fit=crop" alt="回忆2">
+                        <button class="delete-media" onclick="deleteSampleImage(this)"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+                    </div>
+                    <label class="gallery-item upload-placeholder" id="upload-image-label" for="image-upload">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        </svg>
+                        <span>添加图片</span>
+                    </label>
+                    <label class="gallery-item upload-placeholder" id="upload-video-label" for="video-upload">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                        </svg>
+                        <span>添加视频</span>
+                    </label>
+                    <input type="file" id="image-upload" accept="image/*" onchange="handleImageUpload(event)">
+                    <input type="file" id="video-upload" accept="video/*" onchange="handleVideoUpload(event)">
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>感谢你的访问</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="edit-modal">
+        <div class="modal-content">
+            <h3>编辑内容</h3>
+            <textarea id="edit-letter-text" placeholder="请输入内容..."></textarea>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeEditModal()">取消</button>
+                <button class="confirm-btn" onclick="saveLetterContent()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="music-modal">
+        <div class="modal-content">
+            <h3>更改背景音乐</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 15px;">方式1：上传音乐文件</p>
+            <input type="file" id="music-file-input" accept="audio/*" style="margin-bottom: 15px;">
+            <p style="font-size: 0.9rem; margin-bottom: 15px;">方式2：输入音乐URL</p>
+            <input type="text" id="music-url-input" placeholder="请输入音乐URL地址">
+            <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 20px;">提示: 支持 mp3、wav、ogg 等格式，两种方式任选其一</p>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeMusicModal()">取消</button>
+                <button class="confirm-btn" onclick="saveMusicUrl()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="media-modal" id="media-viewer">
+        <button class="close-btn" onclick="closeMediaViewer()">
+            <svg viewBox="0 0 24 24">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+        </button>
+        <div id="media-viewer-content"></div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        var USERS = {
+            '黄倩': { password: '0829', role: 'viewer' },
+            '龚建东': { password: '0528', role: 'editor' }
+        };
+        
+        var currentUser = null;
+        var isPlaying = false;
+        var isRecording = false;
+        var mediaRecorder = null;
+        var audioChunks = [];
+        var bgm = document.getElementById('bgm');
+        var defaultMusicUrl = '';
+        var lastSyncTime = 0;
+        var syncInterval = null;
+        
+        var STORAGE_KEYS = {
+            LETTER_CONTENT: 'love_letter_content',
+            MUSIC_URL: 'love_letter_music_url',
+            MEDIA_ITEMS: 'love_letter_media',
+            VOICE_MESSAGES: 'love_letter_voices',
+            LOGGED_USER: 'love_letter_logged_user'
+        };
+        
+        var CLOUD_CONFIG = {
+            bucket: 'love-letter-storage1',
+            region: 'oss-cn-hangzhou',
+            endpoint: 'oss-cn-hangzhou.aliyuncs.com',
+            dataFile: 'love-letter-data.json',
+            accessKeyId: process.env.OSS_ACCESS_KEY_ID || 'LTAI5t9wNd9LxzUPHdxqxyXg',
+            accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET || '0S1CQQNpTbzRbVxovkLlPZ7JdePq5L',
+            websiteUrl: 'https://love-letter-storage1.oss-cn-hangzhou.aliyuncs.com'
+        };
+        
+        var ossClient;
+        
+        var db;
+        var DB_NAME = 'LoveLetterDB';
+        var DB_VERSION = 1;
+        
+        function initDB() {
+            return new Promise(function(resolve, reject) {
+                var request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = function() {
+                    console.error('IndexedDB 打开失败');
+                    reject('IndexedDB 不可用，将使用 localStorage');
+                };
+                
+                request.onsuccess = function(event) {
+                    db = event.target.result;
+                    resolve();
+                };
+                
+                request.onupgradeneeded = function(event) {
+                    var database = event.target.result;
+                    if (!database.objectStoreNames.contains('media')) {
+                        database.createObjectStore('media', { keyPath: 'id' });
+                    }
+                    if (!database.objectStoreNames.contains('voices')) {
+                        database.createObjectStore('voices', { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+        
+        function saveMediaToDB(mediaItem) {
+            return new Promise(function(resolve, reject) {
+                if (!db) {
+                    reject('DB not initialized');
+                    return;
+                }
+                var transaction = db.transaction(['media'], 'readwrite');
+                var store = transaction.objectStore('media');
+                var request = store.put(mediaItem);
+                request.onsuccess = resolve;
+                request.onerror = reject;
+            });
+        }
+        
+        function getAllMediaFromDB() {
+            return new Promise(function(resolve, reject) {
+                if (!db) {
+                    reject('DB not initialized');
+                    return;
+                }
+                var transaction = db.transaction(['media'], 'readonly');
+                var store = transaction.objectStore('media');
+                var request = store.getAll();
+                request.onsuccess = function(event) {
+                    resolve(event.target.result || []);
+                };
+                request.onerror = reject;
+            });
+        }
+        
+        function deleteMediaFromDB(id) {
+            return new Promise(function(resolve, reject) {
+                if (!db) {
+                    reject('DB not initialized');
+                    return;
+                }
+                var transaction = db.transaction(['media'], 'readwrite');
+                var store = transaction.objectStore('media');
+                var request = store.delete(id);
+                request.onsuccess = resolve;
+                request.onerror = reject;
+            });
+        }
+        
+        function saveVoiceToDB(voiceItem) {
+            return new Promise(function(resolve, reject) {
+                if (!db) {
+                    reject('DB not initialized');
+                    return;
+                }
+                var transaction = db.transaction(['voices'], 'readwrite');
+                var store = transaction.objectStore('voices');
+                var request = store.put(voiceItem);
+                request.onsuccess = resolve;
+                request.onerror = reject;
+            });
+        }
+        
+        function getAllVoicesFromDB() {
+            return new Promise(function(resolve, reject) {
+                if (!db) {
+                    reject('DB not initialized');
+                    return;
+                }
+                var transaction = db.transaction(['voices'], 'readonly');
+                var store = transaction.objectStore('voices');
+                var request = store.getAll();
+                request.onsuccess = function(event) {
+                    resolve(event.target.result || []);
+                };
+                request.onerror = reject;
+            });
+        }
+        
+        function deleteVoiceFromDB(id) {
+            return new Promise(function(resolve, reject) {
+                if (!db) {
+                    reject('DB not initialized');
+                    return;
+                }
+                var transaction = db.transaction(['voices'], 'readwrite');
+                var store = transaction.objectStore('voices');
+                var request = store.delete(id);
+                request.onsuccess = resolve;
+                request.onerror = reject;
+            });
+        }
+        
+        function initCloudStorage() {
+            try {
+                ossClient = new OSS({
+                    region: CLOUD_CONFIG.region,
+                    bucket: CLOUD_CONFIG.bucket,
+                    endpoint: CLOUD_CONFIG.endpoint,
+                    accessKeyId: CLOUD_CONFIG.accessKeyId,
+                    accessKeySecret: CLOUD_CONFIG.accessKeySecret,
+                    secure: true
+                });
+                console.log('云端存储初始化成功');
+                checkCloudConnection();
+            } catch (e) {
+                console.error('云端存储初始化失败:', e);
+                setCloudStatus(false);
+            }
+        }
+        
+        function setCloudStatus(connected) {
+            var statusEl = document.getElementById('cloud-status');
+            if (statusEl) {
+                if (connected) {
+                    statusEl.textContent = '☁️';
+                    statusEl.className = 'cloud-status connected';
+                    statusEl.title = '云端已连接';
+                } else {
+                    statusEl.textContent = '⚠️';
+                    statusEl.className = 'cloud-status disconnected';
+                    statusEl.title = '云端未连接';
+                }
+            }
+        }
+        
+        async function checkCloudConnection() {
+            if (!ossClient) {
+                setCloudStatus(false);
+                return;
+            }
+            
+            try {
+                await ossClient.list({ maxKeys: 1 });
+                setCloudStatus(true);
+                console.log('云端连接正常');
+            } catch (e) {
+                console.error('云端连接失败:', e);
+                setCloudStatus(false);
+            }
+        }
+        
+        async function loadFromCloud() {
+            if (!ossClient) return null;
+            
+            try {
+                var result = await ossClient.get(CLOUD_CONFIG.dataFile);
+                var data = JSON.parse(result.content);
+                console.log('从云端加载数据成功');
+                return data;
+            } catch (e) {
+                console.error('从云端加载数据失败:', e);
+                return null;
+            }
+        }
+        
+        async function saveToCloud(data) {
+            if (!ossClient) return false;
+            
+            try {
+                await ossClient.put(CLOUD_CONFIG.dataFile, JSON.stringify(data, null, 2));
+                console.log('数据同步到云端成功');
+                return true;
+            } catch (e) {
+                console.error('数据同步到云端失败:', e);
+                return false;
+            }
+        }
+        
+        async function uploadFileToCloud(file, folder) {
+            if (!ossClient) return null;
+            
+            try {
+                var fileName = Date.now() + '-' + file.name;
+                var objectKey = folder + '/' + fileName;
+                await ossClient.put(objectKey, file);
+                var url = 'https://' + CLOUD_CONFIG.bucket + '.' + CLOUD_CONFIG.endpoint + '/' + objectKey;
+                return { url: url, key: objectKey };
+            } catch (e) {
+                console.error('文件上传失败:', e);
+                return null;
+            }
+        }
+        
+        async function deleteFileFromCloud(objectKey) {
+            if (!ossClient) return;
+            
+            try {
+                await ossClient.delete(objectKey);
+                console.log('文件删除成功:', objectKey);
+            } catch (e) {
+                console.error('文件删除失败:', e);
+            }
+        }
+        
+        async function syncAllDataToCloud() {
+            if (!ossClient) {
+                showToast('⚠️ 云端存储未初始化');
+                setCloudStatus(false);
+                return;
+            }
+            
+            try {
+                showToast('正在同步到云端...');
+                var mediaItems = await getAllMediaFromDB();
+                var voiceMessages = await getAllVoicesFromDB();
+                var letterContent = document.getElementById('letter-content').textContent;
+                var musicUrl = bgm.src;
+                
+                var data = {
+                    letterContent: letterContent,
+                    musicUrl: musicUrl,
+                    mediaItems: mediaItems,
+                    voiceMessages: voiceMessages,
+                    lastUpdated: new Date().toISOString(),
+                    version: Date.now(),
+                    savedBy: currentUser ? currentUser.username : 'unknown'
+                };
+                
+                var success = await saveToCloud(data);
+                if (success) {
+                    saveLetterContent(letterContent);
+                    saveMusicUrl(musicUrl);
+                    setCloudStatus(true);
+                    showToast('✓ 数据已同步到云端');
+                    console.log('云端数据:', data);
+                } else {
+                    setCloudStatus(false);
+                    showToast('⚠️ 同步失败，请检查网络');
+                }
+            } catch (e) {
+                console.error('同步数据失败:', e);
+                setCloudStatus(false);
+                showToast('⚠️ 同步失败: ' + e.message);
+            }
+        }
+        
+        async function loadAllDataFromCloud() {
+            if (!ossClient) {
+                showToast('云端存储未初始化');
+                return false;
+            }
+            
+            try {
+                showToast('正在从云端加载数据...');
+                var data = await loadFromCloud();
+                if (data) {
+                    var hasUpdates = false;
+                    
+                    if (data.letterContent && data.letterContent !== document.getElementById('letter-content').textContent) {
+                        document.getElementById('letter-content').textContent = data.letterContent;
+                        saveLetterContent(data.letterContent);
+                        hasUpdates = true;
+                    }
+                    if (data.musicUrl && data.musicUrl !== bgm.src) {
+                        bgm.src = data.musicUrl;
+                        saveMusicUrl(data.musicUrl);
+                        hasUpdates = true;
+                    }
+                    if (data.mediaItems && data.mediaItems.length > 0) {
+                        var currentItems = await getAllMediaFromDB();
+                        var currentIds = new Set(currentItems.map(item => item.id));
+                        for (var item of data.mediaItems) {
+                            if (!currentIds.has(item.id)) {
+                                await saveMediaToDB(item);
+                                hasUpdates = true;
+                            }
+                        }
+                    }
+                    if (data.voiceMessages && data.voiceMessages.length > 0) {
+                        var currentVoices = await getAllVoicesFromDB();
+                        var voiceIds = new Set(currentVoices.map(v => v.id));
+                        for (var msg of data.voiceMessages) {
+                            if (!voiceIds.has(msg.id)) {
+                                await saveVoiceToDB(msg);
+                                hasUpdates = true;
+                            }
+                        }
+                    }
+                    
+                    if (hasUpdates) {
+                        showToast('✓ 已从云端同步数据');
+                        loadMediaGallery();
+                        loadVoiceMessagesUI();
+                    } else {
+                        showToast('数据已是最新');
+                    }
+                    return true;
+                } else {
+                    showToast('云端暂无数据，使用本地数据');
+                }
+            } catch (e) {
+                console.error('从云端加载数据失败:', e);
+                showToast('云端加载失败: ' + e.message);
+            }
+            return false;
+        }
+        
+        function saveToStorage(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (e) {
+                console.error('保存失败:', e);
+            }
+        }
+        
+        function loadFromStorage(key, defaultValue) {
+            try {
+                var data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : defaultValue;
+            } catch (e) {
+                console.error('读取失败:', e);
+                return defaultValue;
+            }
+        }
+        
+        function saveLetterContent(content) {
+            saveToStorage(STORAGE_KEYS.LETTER_CONTENT, content);
+        }
+        
+        function loadLetterContent() {
+            var defaultContent = '亲爱的你：\n\n分开的这些日子里，我每天都在想你。每一个安静的夜晚，每一个熟悉的街角，都会让我想起我们曾经一起走过的路。我知道，是我的幼稚和不懂珍惜，让你失望了。\n\n我常常在想，如果当初我能更成熟一点，更懂得包容和理解，我们是不是就不会走到今天这一步。你是我生命中最特别的存在，是我想要用一生去守护的人。\n\n我知道现在说这些可能已经太晚，但我真的无法放下你。我愿意改变，愿意为了你变成更好的人。如果你还愿意给我一次机会，我一定会用我的余生去证明，你选择我，是正确的决定。\n\n                                                                                                    永远爱你的人';
+            return loadFromStorage(STORAGE_KEYS.LETTER_CONTENT, defaultContent);
+        }
+        
+        function saveMusicUrl(url) {
+            saveToStorage(STORAGE_KEYS.MUSIC_URL, url);
+        }
+        
+        function loadMusicUrl() {
+            return loadFromStorage(STORAGE_KEYS.MUSIC_URL, '');
+        }
+        
+        function saveMediaItems(items) {
+            saveToStorage(STORAGE_KEYS.MEDIA_ITEMS, items);
+        }
+        
+        function loadMediaItems() {
+            var defaultItems = [
+                { type: 'image', src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop', name: '回忆1' },
+                { type: 'image', src: 'https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?w=400&h=400&fit=crop', name: '回忆2' }
+            ];
+            return loadFromStorage(STORAGE_KEYS.MEDIA_ITEMS, defaultItems);
+        }
+        
+        function saveVoiceMessages(messages) {
+            saveToStorage(STORAGE_KEYS.VOICE_MESSAGES, messages);
+        }
+        
+        function loadVoiceMessages() {
+            return loadFromStorage(STORAGE_KEYS.VOICE_MESSAGES, []);
+        }
+        
+        function createStars() {
+            var starsContainer = document.getElementById('stars');
+            for (var i = 0; i < 50; i++) {
+                var star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = (Math.random() * 3 + 1) + 'px';
+                star.style.height = star.style.width;
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                star.style.setProperty('--min-opacity', Math.random() * 0.3 + 0.1);
+                star.style.setProperty('--max-opacity', Math.random() * 0.5 + 0.5);
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        function handleLogin() {
+            var usernameInput = document.getElementById('username');
+            var passwordInput = document.getElementById('password');
+            var username = usernameInput.value.trim();
+            var password = passwordInput.value.trim();
+            
+            if (username === '' || password === '') {
+                showToast('请输入账户和密码');
+                return;
+            }
+            
+            if (USERS[username] && USERS[username].password === password) {
+                currentUser = { username: username, role: USERS[username].role };
+                saveToStorage(STORAGE_KEYS.LOGGED_USER, currentUser);
+                
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('main-container').style.display = 'block';
+                
+                document.getElementById('user-name').textContent = username;
+                var roleSpan = document.getElementById('user-role');
+                roleSpan.textContent = currentUser.role === 'editor' ? '编辑者' : '查看者';
+                if (currentUser.role === 'viewer') {
+                    roleSpan.className = 'role viewer-role';
+                } else {
+                    roleSpan.className = 'role';
+                }
+                
+                applyPermissions();
+                loadSavedData();
+                startAutoSync();
+                showToast('欢迎回来，' + username);
+                
+                setTimeout(function() {
+                    if (bgm.src) {
+                        bgm.play().then(function() {
+                            isPlaying = true;
+                            document.getElementById('music-btn').classList.add('playing');
+                            document.getElementById('music-icon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                        }).catch(function() {
+                            showToast('自动播放被浏览器阻止，请手动点击播放按钮');
+                        });
+                    }
+                }, 1000);
+                
+            } else {
+                var errorEl = document.getElementById('login-error');
+                errorEl.classList.add('show');
+                setTimeout(function() {
+                    errorEl.classList.remove('show');
+                }, 3000);
+            }
+        }
+        
+        function applyPermissions() {
+            var editBtns = document.querySelectorAll('.edit-btn');
+            var uploadImageLabel = document.getElementById('upload-image-label');
+            var uploadVideoLabel = document.getElementById('upload-video-label');
+            var recordBtn = document.getElementById('record-btn');
+            var musicChangeBtn = document.getElementById('music-change-btn');
+            var deleteButtons = document.querySelectorAll('.delete-media');
+            
+            if (currentUser.role === 'viewer') {
+                editBtns.forEach(function(btn) {
+                    btn.classList.add('hidden');
+                });
+                
+                if (uploadImageLabel) uploadImageLabel.classList.add('hidden');
+                if (uploadVideoLabel) uploadVideoLabel.classList.add('hidden');
+                if (recordBtn) {
+                    recordBtn.disabled = true;
+                    recordBtn.style.opacity = '0.5';
+                    recordBtn.style.cursor = 'not-allowed';
+                }
+                if (musicChangeBtn) musicChangeBtn.style.display = 'none';
+                
+                deleteButtons.forEach(function(btn) {
+                    btn.style.display = 'none';
+                });
+                
+            } else {
+                editBtns.forEach(function(btn) {
+                    btn.classList.remove('hidden');
+                });
+                
+                if (uploadImageLabel) uploadImageLabel.classList.remove('hidden');
+                if (uploadVideoLabel) uploadVideoLabel.classList.remove('hidden');
+                if (recordBtn) {
+                    recordBtn.disabled = false;
+                    recordBtn.style.opacity = '1';
+                    recordBtn.style.cursor = 'pointer';
+                }
+                if (musicChangeBtn) musicChangeBtn.style.display = 'flex';
+                
+                deleteButtons.forEach(function(btn) {
+                    btn.style.display = 'flex';
+                });
+            }
+        }
+        
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem(STORAGE_KEYS.LOGGED_USER);
+            isPlaying = false;
+            bgm.pause();
+            bgm.src = '';
+            stopAutoSync();
+            
+            document.getElementById('login-container').style.display = 'flex';
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('music-btn').classList.remove('playing');
+            document.getElementById('music-icon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+            
+            showToast('已退出登录');
+        }
+        
+        function toggleMusic() {
+            var musicBtn = document.getElementById('music-btn');
+            var musicIcon = document.getElementById('music-icon');
+            
+            if (isPlaying) {
+                bgm.pause();
+                musicBtn.classList.remove('playing');
+                musicIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            } else {
+                if (bgm.src) {
+                    bgm.play();
+                    musicBtn.classList.add('playing');
+                    musicIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                } else {
+                    showToast('请先在设置中配置音乐URL');
+                    openMusicModal();
+                }
+            }
+            isPlaying = !isPlaying;
+        }
+        
+        function openMusicModal() {
+            var musicUrlInput = document.getElementById('music-url-input');
+            musicUrlInput.value = bgm.src || defaultMusicUrl;
+            document.getElementById('music-file-input').value = '';
+            document.getElementById('music-modal').classList.add('show');
+        }
+        
+        function closeMusicModal() {
+            document.getElementById('music-modal').classList.remove('show');
+        }
+        
+        function saveMusicUrl() {
+            var fileInput = document.getElementById('music-file-input');
+            var urlInput = document.getElementById('music-url-input').value.trim();
+            
+            if (fileInput.files.length > 0) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var musicData = e.target.result;
+                    bgm.src = musicData;
+                    saveToStorage(STORAGE_KEYS.MUSIC_URL, musicData);
+                    bgm.play();
+                    isPlaying = true;
+                    document.getElementById('music-btn').classList.add('playing');
+                    document.getElementById('music-icon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                    showToast('音乐已上传并播放');
+                    closeMusicModal();
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else if (urlInput) {
+                bgm.src = urlInput;
+                saveToStorage(STORAGE_KEYS.MUSIC_URL, urlInput);
+                bgm.play();
+                isPlaying = true;
+                document.getElementById('music-btn').classList.add('playing');
+                document.getElementById('music-icon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                showToast('音乐已更新');
+                closeMusicModal();
+            } else {
+                showToast('请上传音乐文件或输入URL');
+            }
+        }
+        
+        function toggleRecording() {
+            if (currentUser.role !== 'editor') {
+                showToast('只有编辑者可以录制语音');
+                return;
+            }
+            
+            var recordBtn = document.getElementById('record-btn');
+            if (!isRecording) {
+                startRecording();
+                recordBtn.classList.add('recording');
+                recordBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+            } else {
+                stopRecording();
+                recordBtn.classList.remove('recording');
+                recordBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3S13.66 8 12 8 9 9.34 9 11s1.34 3 3 3zm5.66-1.34l-1.75-1.75c-.78-.78-2.05-.78-2.83 0L7 15.95c-.78.78-.78 2.05 0 2.83l1.75 1.75c.78.78 2.05.78 2.83 0l6.66-6.66c.79-.78.79-2.04 0-2.83z"/></svg>';
+            }
+            isRecording = !isRecording;
+        }
+        
+        function startRecording() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function(stream) {
+                        mediaRecorder = new MediaRecorder(stream);
+                        audioChunks = [];
+                        
+                        mediaRecorder.ondataavailable = function(e) {
+                            if (e.data.size > 0) {
+                                audioChunks.push(e.data);
+                            }
+                        };
+                        
+                        mediaRecorder.onstop = function() {
+                            if (audioChunks.length > 0) {
+                                var blob = new Blob(audioChunks, { type: 'audio/wav' });
+                                addVoiceMessage(blob);
+                            }
+                            stream.getTracks().forEach(function(track) {
+                                track.stop();
+                            });
+                        };
+                        
+                        mediaRecorder.start();
+                        showToast('开始录音...');
+                    })
+                    .catch(function(error) {
+                        console.error('录音失败:', error);
+                        showToast('无法访问麦克风');
+                        isRecording = false;
+                        document.getElementById('record-btn').classList.remove('recording');
+                    });
+            } else {
+                showToast('您的浏览器不支持录音功能');
+                isRecording = false;
+            }
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                showToast('录音已保存');
+            }
+        }
+        
+        async function addVoiceMessage(blob) {
+            showToast('正在上传语音...');
+            var file = new File([blob], 'voice.wav', { type: 'audio/wav' });
+            var result = await uploadFileToCloud(file, 'voices');
+            
+            if (result) {
+                var newMessage = {
+                    id: Date.now().toString(),
+                    data: result.url,
+                    key: result.key,
+                    timestamp: new Date().toISOString()
+                };
+                
+                await saveVoiceToDB(newMessage);
+                
+                var voiceList = document.getElementById('voice-list');
+                var item = document.createElement('div');
+                item.className = 'voice-item';
+                item.dataset.id = newMessage.id;
+                
+                var audio = document.createElement('audio');
+                audio.controls = true;
+                audio.src = result.url;
+                
+                var deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.style.cssText = 'background: rgba(255,71,87,0.2); border: none; padding: 8px; border-radius: 8px; cursor: pointer;';
+                deleteBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #ff4757;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+                deleteBtn.onclick = function() {
+                    if (currentUser.role === 'editor') {
+                        deleteVoiceMessage(newMessage.id, item);
+                    }
+                };
+                
+                item.appendChild(audio);
+                item.appendChild(deleteBtn);
+                voiceList.insertBefore(item, voiceList.firstChild);
+                
+                syncAllDataToCloud();
+                showToast('语音上传成功');
+            } else {
+                showToast('语音上传失败');
+            }
+        }
+        
+        async function handleImageUpload(event) {
+            if (currentUser.role !== 'editor') {
+                showToast('只有编辑者可以上传图片');
+                return;
+            }
+            
+            var file = event.target.files[0];
+            if (file) {
+                if (!file.type.startsWith('image/')) {
+                    showToast('请选择图片文件');
+                    return;
+                }
+                
+                showToast('正在上传...');
+                var result = await uploadFileToCloud(file, 'images');
+                if (result) {
+                    var mediaItem = {
+                        id: Date.now().toString(),
+                        type: 'image',
+                        src: result.url,
+                        key: result.key,
+                        name: file.name
+                    };
+                    await saveMediaToDB(mediaItem);
+                    addMediaToGallery(result.url, 'image', file.name, mediaItem.id);
+                    syncAllDataToCloud();
+                    showToast('图片上传成功');
+                } else {
+                    showToast('上传失败，请重试');
+                }
+            }
+            event.target.value = '';
+        }
+        
+        async function handleVideoUpload(event) {
+            if (currentUser.role !== 'editor') {
+                showToast('只有编辑者可以上传视频');
+                return;
+            }
+            
+            var file = event.target.files[0];
+            if (file) {
+                if (!file.type.startsWith('video/')) {
+                    showToast('请选择视频文件');
+                    return;
+                }
+                
+                showToast('正在上传...');
+                var result = await uploadFileToCloud(file, 'videos');
+                if (result) {
+                    var mediaItem = {
+                        id: Date.now().toString(),
+                        type: 'video',
+                        src: result.url,
+                        key: result.key,
+                        name: file.name
+                    };
+                    await saveMediaToDB(mediaItem);
+                    addMediaToGallery(result.url, 'video', file.name, mediaItem.id);
+                    syncAllDataToCloud();
+                    showToast('视频上传成功');
+                } else {
+                    showToast('上传失败，请重试');
+                }
+            }
+            event.target.value = '';
+        }
+        
+        function addMediaToGallery(src, type, name, itemId) {
+            var gallery = document.getElementById('gallery-container');
+            var newItem = document.createElement('div');
+            newItem.className = 'gallery-item';
+            newItem.dataset.id = itemId;
+            
+            var media;
+            if (type === 'image') {
+                media = document.createElement('img');
+                media.src = src;
+                media.alt = name || '图片';
+            } else {
+                media = document.createElement('video');
+                media.src = src;
+                media.controls = true;
+                media.muted = true;
+            }
+            
+            media.onclick = function() {
+                openMediaViewer(newItem, type);
+            };
+            
+            var deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-media';
+            deleteBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteMediaItem(newItem, itemId);
+            };
+            
+            if (currentUser.role !== 'editor') {
+                deleteBtn.style.display = 'none';
+            }
+            
+            newItem.appendChild(media);
+            newItem.appendChild(deleteBtn);
+            
+            var uploadLabels = gallery.querySelectorAll('.upload-placeholder');
+            if (uploadLabels.length > 0) {
+                gallery.insertBefore(newItem, uploadLabels[0]);
+            } else {
+                gallery.appendChild(newItem);
+            }
+        }
+        
+        function openMediaViewer(element, type) {
+            var viewer = document.getElementById('media-viewer');
+            var content = document.getElementById('media-viewer-content');
+            
+            if (type === 'image') {
+                var img = element.querySelector('img');
+                content.innerHTML = '<img src="' + img.src + '" alt="' + (img.alt || '图片') + '">';
+            } else {
+                var video = element.querySelector('video');
+                content.innerHTML = '<video src="' + video.src + '" controls autoplay></video>';
+            }
+            
+            viewer.classList.add('show');
+        }
+        
+        function closeMediaViewer() {
+            var viewer = document.getElementById('media-viewer');
+            var content = document.getElementById('media-viewer-content');
+            viewer.classList.remove('show');
+            content.innerHTML = '';
+        }
+        
+        function openEditLetterModal() {
+            var content = document.getElementById('letter-content').textContent;
+            document.getElementById('edit-letter-text').value = content;
+            document.getElementById('edit-modal').classList.add('show');
+        }
+        
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('show');
+        }
+        
+        async function saveLetterContent() {
+            var content = document.getElementById('edit-letter-text').value;
+            if (content.trim()) {
+                document.getElementById('letter-content').textContent = content;
+                saveToStorage(STORAGE_KEYS.LETTER_CONTENT, content);
+                await syncAllDataToCloud();
+                showToast('内容已保存并同步到云端');
+            }
+            closeEditModal();
+        }
+        
+        async function loadSavedData() {
+            var cloudLoaded = await loadAllDataFromCloud();
+            
+            if (!cloudLoaded) {
+                var letterContent = loadLetterContent();
+                document.getElementById('letter-content').textContent = letterContent;
+                
+                var musicUrl = loadMusicUrl();
+                if (musicUrl) {
+                    bgm.src = musicUrl;
+                }
+            }
+            
+            setTimeout(function() {
+                loadMediaGallery();
+            }, 500);
+            
+            setTimeout(function() {
+                loadVoiceMessagesUI();
+            }, 500);
+        }
+        
+        function loadMediaGallery() {
+            getAllMediaFromDB().then(function(mediaItems) {
+                var gallery = document.getElementById('gallery-container');
+                
+                var existingInputs = gallery.querySelectorAll('input[type="file"]');
+                var existingLabels = gallery.querySelectorAll('.upload-placeholder');
+                
+                var imageUploadInput = existingInputs[0] || document.createElement('input');
+                if (!existingInputs[0]) {
+                    imageUploadInput.type = 'file';
+                    imageUploadInput.id = 'image-upload';
+                    imageUploadInput.accept = 'image/*';
+                    imageUploadInput.style.display = 'none';
+                    imageUploadInput.addEventListener('change', handleImageUpload);
+                }
+                
+                var videoUploadInput = existingInputs[1] || document.createElement('input');
+                if (!existingInputs[1]) {
+                    videoUploadInput.type = 'file';
+                    videoUploadInput.id = 'video-upload';
+                    videoUploadInput.accept = 'video/*';
+                    videoUploadInput.style.display = 'none';
+                    videoUploadInput.addEventListener('change', handleVideoUpload);
+                }
+                
+                var uploadImageLabel = existingLabels[0] || document.createElement('label');
+                if (!existingLabels[0]) {
+                    uploadImageLabel.className = 'gallery-item upload-placeholder';
+                    uploadImageLabel.id = 'upload-image-label';
+                    uploadImageLabel.setAttribute('for', 'image-upload');
+                    uploadImageLabel.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg><span>添加图片</span>';
+                }
+                
+                var uploadVideoLabel = existingLabels[1] || document.createElement('label');
+                if (!existingLabels[1]) {
+                    uploadVideoLabel.className = 'gallery-item upload-placeholder';
+                    uploadVideoLabel.id = 'upload-video-label';
+                    uploadVideoLabel.setAttribute('for', 'video-upload');
+                    uploadVideoLabel.innerHTML = '<svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg><span>添加视频</span>';
+                }
+                
+                var existingItems = gallery.querySelectorAll('.gallery-item:not(.upload-placeholder)');
+                existingItems.forEach(function(item) {
+                    item.remove();
+                });
+                
+                mediaItems.forEach(function(item) {
+                    var newItem = document.createElement('div');
+                    newItem.className = 'gallery-item';
+                    newItem.dataset.id = item.id;
+                    
+                    var media;
+                    if (item.type === 'image') {
+                        media = document.createElement('img');
+                        media.src = item.src;
+                        media.alt = item.name || '图片';
+                    } else {
+                        media = document.createElement('video');
+                        media.src = item.src;
+                        media.controls = true;
+                        media.muted = true;
+                    }
+                    
+                    media.onclick = function() {
+                        openMediaViewer(newItem, item.type);
+                    };
+                    
+                    var deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-media';
+                    deleteBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+                    deleteBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        deleteMediaItem(newItem, item.id);
+                    };
+                    
+                    if (currentUser.role !== 'editor') {
+                        deleteBtn.style.display = 'none';
+                    }
+                    
+                    newItem.appendChild(media);
+                    newItem.appendChild(deleteBtn);
+                    gallery.insertBefore(newItem, uploadImageLabel);
+                });
+                
+                if (!existingInputs[0]) gallery.appendChild(imageUploadInput);
+                if (!existingInputs[1]) gallery.appendChild(videoUploadInput);
+                if (!existingLabels[0]) gallery.appendChild(uploadImageLabel);
+                if (!existingLabels[1]) gallery.appendChild(uploadVideoLabel);
+                
+                if (currentUser.role !== 'editor') {
+                    uploadImageLabel.style.display = 'none';
+                    uploadVideoLabel.style.display = 'none';
+                } else {
+                    uploadImageLabel.style.display = 'flex';
+                    uploadVideoLabel.style.display = 'flex';
+                }
+            }).catch(function() {
+                console.error('加载媒体失败');
+            });
+        }
+        
+        async function deleteMediaItem(element, itemId) {
+            try {
+                var items = await getAllMediaFromDB();
+                var item = items.find(function(i) { return i.id === itemId; });
+                if (item && item.key) {
+                    await deleteFileFromCloud(item.key);
+                }
+                await deleteMediaFromDB(itemId);
+                element.remove();
+                await syncAllDataToCloud();
+                showToast('媒体已删除');
+            } catch (e) {
+                showToast('删除失败');
+            }
+        }
+        
+        function loadVoiceMessagesUI() {
+            getAllVoicesFromDB().then(function(voiceMessages) {
+                var voiceList = document.getElementById('voice-list');
+                var existingIds = new Set();
+                
+                var existingItems = voiceList.querySelectorAll('.voice-item');
+                existingItems.forEach(function(item) {
+                    existingIds.add(item.dataset.id);
+                });
+                
+                voiceMessages.forEach(function(msg) {
+                    if (!existingIds.has(msg.id)) {
+                        var item = document.createElement('div');
+                        item.className = 'voice-item';
+                        item.dataset.id = msg.id;
+                        
+                        var audio = document.createElement('audio');
+                        audio.controls = true;
+                        audio.src = msg.data;
+                        
+                        var deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.style.cssText = 'background: rgba(255,71,87,0.2); border: none; padding: 8px; border-radius: 8px; cursor: pointer;';
+                        deleteBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #ff4757;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+                        deleteBtn.onclick = function() {
+                            if (currentUser.role === 'editor') {
+                                deleteVoiceMessage(msg.id, item);
+                            }
+                        };
+                        
+                        item.appendChild(audio);
+                        item.appendChild(deleteBtn);
+                        voiceList.insertBefore(item, voiceList.firstChild);
+                    }
+                });
+            }).catch(function() {
+                console.error('加载语音失败');
+            });
+        }
+        
+        async function deleteVoiceMessage(id, element) {
+            try {
+                var items = await getAllVoicesFromDB();
+                var item = items.find(function(i) { return i.id === id; });
+                if (item && item.key) {
+                    await deleteFileFromCloud(item.key);
+                }
+                await deleteVoiceFromDB(id);
+                if (element) element.remove();
+                await syncAllDataToCloud();
+                showToast('语音已删除');
+            } catch (e) {
+                showToast('删除失败');
+            }
+        }
+        
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        function deleteSampleImage(btn) {
+            if (currentUser.role !== 'editor') {
+                showToast('只有编辑者可以删除');
+                return;
+            }
+            var item = btn.parentElement;
+            item.remove();
+            showToast('已删除');
+        }
+        
+        function startAutoSync() {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+            }
+            
+            syncInterval = setInterval(function() {
+                var now = Date.now();
+                if (now - lastSyncTime > 300000) {
+                    loadAllDataFromCloud();
+                    lastSyncTime = now;
+                }
+            }, 60000);
+        }
+        
+        function stopAutoSync() {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+                syncInterval = null;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            
+            document.getElementById('username').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
+            });
+            
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeEditModal();
+                    closeMusicModal();
+                    closeMediaViewer();
+                }
+            });
+            
+            initCloudStorage();
+            initDB().then(function() {
+                autoLogin();
+            }).catch(function() {
+                autoLogin();
+            });
+        });
+        
+        function autoLogin() {
+            var savedUser = loadFromStorage(STORAGE_KEYS.LOGGED_USER, null);
+            if (savedUser) {
+                currentUser = savedUser;
+                
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('main-container').style.display = 'block';
+                
+                document.getElementById('user-name').textContent = savedUser.username;
+                var roleSpan = document.getElementById('user-role');
+                roleSpan.textContent = savedUser.role === 'editor' ? '编辑者' : '查看者';
+                if (savedUser.role === 'viewer') {
+                    roleSpan.className = 'role viewer-role';
+                } else {
+                    roleSpan.className = 'role';
+                }
+                
+                applyPermissions();
+                loadSavedData();
+                showToast('欢迎回来，' + savedUser.username);
+                
+                setTimeout(function() {
+                    if (bgm.src) {
+                        bgm.play().then(function() {
+                            isPlaying = true;
+                            document.getElementById('music-btn').classList.add('playing');
+                            document.getElementById('music-icon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                        }).catch(function() {
+                            
+                        });
+                    }
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
