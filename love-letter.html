@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>给她的一封信</title>
-    <script src="https://gosspublic.alicdn.com/aliyun-oss-sdk-6.18.1.min.js"></script>
+    <title>温予皆过往</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -758,6 +757,190 @@
             color: #fff;
         }
         
+        .media-privacy-badge.friends,
+        .letter-privacy.friends {
+            background: rgba(52, 211, 153, 0.25);
+            color: #6ee7b7;
+        }
+        
+        .friends-btn {
+            font-size: 1rem;
+            padding: 4px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            background: rgba(52, 211, 153, 0.12);
+        }
+        
+        .friends-btn:hover {
+            background: rgba(52, 211, 153, 0.25);
+        }
+        
+        .friend-badge-dot {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 8px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .friend-badge-dot.show {
+            display: inline-flex;
+        }
+        
+        .friends-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+        
+        .friends-modal.show {
+            display: flex;
+        }
+        
+        .friends-modal-content {
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            background: linear-gradient(160deg, #1e1e32, #16213e);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .friends-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .friends-modal-header h3 {
+            margin: 0;
+            color: #fff;
+            font-size: 1.15rem;
+        }
+        
+        .friends-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0 12px;
+            gap: 4px;
+        }
+        
+        .friends-tab {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            background: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        
+        .friends-tab.active {
+            color: #6ee7b7;
+            border-bottom-color: #34d399;
+        }
+        
+        .friends-panel {
+            display: none;
+            padding: 16px 20px 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .friends-panel.active {
+            display: block;
+        }
+        
+        .friends-list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .friends-list-item .friend-name {
+            flex: 1;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .friends-list-item .friend-role-tag {
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.45);
+        }
+        
+        .friend-action-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .friend-action-btn.accept {
+            background: rgba(16, 185, 129, 0.25);
+            color: #6ee7b7;
+        }
+        
+        .friend-action-btn.reject {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+        
+        .friend-action-btn.remove {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.65);
+        }
+        
+        .friends-add-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        
+        .friends-add-row input {
+            flex: 1;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.25);
+            color: #fff;
+            outline: none;
+        }
+        
+        .friends-empty {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            padding: 28px 12px;
+            font-size: 0.9rem;
+        }
+        
         .locked-media {
             filter: blur(8px);
             position: relative;
@@ -851,7 +1034,196 @@
             margin-top: 24px;
         }
         
-        .notification-panel, .stats-panel {
+        .letter-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .letter-detail-content {
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .letter-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .letter-detail-header h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin: 0;
+            flex: 1;
+        }
+        
+        .letter-detail-content .letter-privacy {
+            margin-right: 12px;
+        }
+        
+        .letter-detail-body {
+            margin-bottom: 24px;
+        }
+        
+        .letter-detail-body p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .letter-detail-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .letter-detail-date {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        .letter-detail-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .letter-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .letter-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(255, 107, 157, 0.2);
+        }
+        
+        .letter-locked {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .lock-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            filter: blur(1px);
+        }
+        
+        .locked-text {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+            filter: blur(0.5px);
+        }
+        
+        .privacy-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .privacy-modal-content {
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .privacy-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .privacy-modal-header h3 {
+            color: #fff;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .privacy-modal-body {
+            margin-bottom: 24px;
+        }
+        
+        .privacy-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .privacy-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .privacy-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .privacy-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .privacy-option span {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+        
+        .privacy-modal-footer {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .notification-panel {
             position: fixed;
             top: 0;
             left: 0;
@@ -1039,13 +1411,127 @@
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 10px 16px;
+            border-radius: 14px;
+            padding: 8px 14px 8px 8px;
             font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             z-index: 100;
+        }
+        
+        .user-info-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-right: 8px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            margin-right: 2px;
+        }
+        
+        .user-info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            line-height: 1.2;
+        }
+        
+        .user-info-text #user-name {
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .user-avatar-wrap {
+            cursor: pointer;
+            display: inline-flex;
+            border-radius: 50%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .user-avatar-wrap:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 2px rgba(255, 107, 157, 0.45);
+        }
+        
+        .user-avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            font-weight: 700;
+            color: #fff;
+            user-select: none;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .user-avatar-initial {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-avatar-sm { width: 32px; height: 32px; font-size: 0.85rem; }
+        .user-avatar-md { width: 42px; height: 42px; font-size: 1rem; }
+        .user-avatar-lg { width: 48px; height: 48px; font-size: 1.1rem; }
+        .user-avatar-xl { width: 44px; height: 44px; font-size: 1.05rem; }
+        
+        .user-avatar.role-editor,
+        .user-avatar.role-editor .user-avatar-initial {
+            background: linear-gradient(135deg, #ff6b9d, #ff4757);
+        }
+        
+        .user-avatar.role-viewer,
+        .user-avatar.role-viewer .user-avatar-initial {
+            background: linear-gradient(135deg, #64c8ff, #3b82f6);
+        }
+        
+        .user-avatar.role-admin,
+        .user-avatar.role-admin .user-avatar-initial {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+        
+        .message-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .letter-voice-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 88px;
+        }
+        
+        .admin-avatar-btn {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.75);
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        
+        .admin-avatar-btn:hover {
+            background: rgba(255, 107, 157, 0.15);
+            border-color: rgba(255, 107, 157, 0.35);
+        }
+        
+        #avatar-upload,
+        #admin-avatar-upload {
+            display: none;
         }
         
         .user-info .role {
@@ -1134,7 +1620,19 @@
             background: rgba(72, 187, 120, 0.2);
         }
         
-        body.light-theme {
+        .sync-settings-btn {
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .sync-settings-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+        
+        .logout-btn {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: #333;
         }
@@ -1714,120 +2212,704 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(145deg, #12121f 0%, #1a1a32 40%, #162447 100%);
             z-index: 100;
             display: flex;
             flex-direction: column;
         }
         
         .admin-header-bar {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px 40px;
+            background: rgba(10, 10, 24, 0.65);
+            backdrop-filter: blur(16px);
+            padding: 18px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+        
+        .admin-logo-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
         
         .admin-logo {
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             font-weight: 700;
             color: #fff;
             display: flex;
             align-items: center;
             gap: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        .admin-logo-sub {
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.45);
+            padding-left: 34px;
         }
         
         .logout-admin {
-            background: rgba(255, 71, 87, 0.2);
-            border: 1px solid rgba(255, 71, 87, 0.3);
-            padding: 10px 24px;
-            border-radius: 20px;
-            color: #ff4757;
+            background: rgba(255, 71, 87, 0.15);
+            border: 1px solid rgba(255, 71, 87, 0.35);
+            padding: 10px 22px;
+            border-radius: 12px;
+            color: #ff8a9b;
             font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
         }
         
         .logout-admin:hover {
-            background: rgba(255, 71, 87, 0.3);
-            transform: translateY(-2px);
+            background: rgba(255, 71, 87, 0.28);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.2);
         }
         
         .admin-main-content {
             display: flex;
             flex: 1;
             overflow: hidden;
+            min-height: 0;
         }
         
         .admin-sidebar {
-            width: 250px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 30px 0;
-            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            width: 260px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 24px 16px;
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
+        .admin-sidebar-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.35);
+            padding: 8px 14px 12px;
         }
         
         .admin-nav-item {
-            padding: 16px 24px;
+            padding: 14px 16px;
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            color: rgba(255, 255, 255, 0.7);
-            border-left: 3px solid transparent;
+            transition: all 0.25s ease;
+            color: rgba(255, 255, 255, 0.65);
+            border-radius: 12px;
+            border: 1px solid transparent;
         }
         
         .admin-nav-item:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
             color: #fff;
+            border-color: rgba(255, 255, 255, 0.06);
         }
         
         .admin-nav-item.active {
-            background: rgba(255, 107, 157, 0.2);
-            color: #ff6b9d;
-            border-left-color: #ff6b9d;
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.22), rgba(192, 132, 252, 0.15));
+            color: #fff;
+            border-color: rgba(255, 107, 157, 0.35);
+            box-shadow: 0 4px 16px rgba(255, 107, 157, 0.12);
         }
         
         .nav-icon {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        
+        .admin-nav-item.active .nav-icon {
+            background: rgba(255, 107, 157, 0.25);
+        }
+        
+        .nav-text-wrap {
+            flex: 1;
+            min-width: 0;
         }
         
         .nav-text {
-            font-size: 0.95rem;
-            font-weight: 500;
+            font-size: 0.92rem;
+            font-weight: 600;
+            display: block;
+        }
+        
+        .nav-desc {
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 2px;
+            display: block;
+        }
+        
+        .admin-nav-badge {
+            min-width: 22px;
+            height: 22px;
+            padding: 0 7px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #ff6b9d, #c084fc);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .admin-nav-badge.hidden {
+            display: none;
         }
         
         .admin-content-area {
             flex: 1;
-            padding: 40px;
+            padding: 28px 36px 40px;
             overflow-y: auto;
+        }
+        
+        .admin-content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .admin-content-area::-webkit-scrollbar-thumb {
+            background: rgba(255, 107, 157, 0.25);
+            border-radius: 4px;
         }
         
         .admin-tab-content {
             display: block;
+            animation: adminFadeIn 0.35s ease;
+        }
+        
+        @keyframes adminFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .admin-page-header {
+            margin-bottom: 24px;
         }
         
         .admin-section-title {
-            font-size: 1.5rem;
+            font-size: 1.55rem;
             font-weight: 700;
             color: #fff;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(255, 107, 157, 0.3);
+            margin: 0 0 8px;
+            letter-spacing: 0.3px;
         }
         
-        .add-user-form {
-            max-width: 600px;
+        .admin-section-desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.45);
+            line-height: 1.5;
+            margin: 0;
+        }
+        
+        .admin-stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        
+        .admin-stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px 18px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .admin-stat-card:hover {
+            border-color: rgba(255, 107, 157, 0.25);
+        }
+        
+        .admin-stat-card.highlight {
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.12), rgba(192, 132, 252, 0.08));
+            border-color: rgba(255, 107, 157, 0.2);
+        }
+        
+        .admin-stat-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.45);
+            margin-bottom: 6px;
+        }
+        
+        .admin-stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .admin-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .admin-search {
+            flex: 1;
+            min-width: 200px;
+            max-width: 320px;
+            padding: 11px 16px 11px 40px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23888' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 14px center;
+        }
+        
+        .admin-search:focus {
+            border-color: rgba(255, 107, 157, 0.5);
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.12);
+        }
+        
+        .admin-filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .admin-filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .admin-filter-btn:hover,
+        .admin-filter-btn.active {
+            background: rgba(255, 107, 157, 0.2);
+            border-color: rgba(255, 107, 157, 0.4);
+            color: #fff;
+        }
+        
+        .pending-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        
+        .pending-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 22px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            border-left: 4px solid #c084fc;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .pending-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        
+        .pending-info {
+            flex: 1;
+            min-width: 220px;
+        }
+        
+        .pending-username {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .pending-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #c084fc, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        
+        .pending-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .pending-chip {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.55);
+        }
+        
+        .pending-role {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        
+        .pending-role label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.55);
+            white-space: nowrap;
+        }
+        
+        .pending-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .no-pending {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            padding: 48px 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+        }
+        
+        .no-pending-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+        
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        
+        .user-perm-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .user-perm-card:hover {
+            border-color: rgba(255, 107, 157, 0.25);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+        }
+        
+        .user-perm-card.system {
+            border-color: rgba(251, 191, 36, 0.25);
+            background: linear-gradient(180deg, rgba(251, 191, 36, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%);
+        }
+        
+        .user-perm-card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 18px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .user-perm-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        
+        .user-perm-avatar.role-editor {
+            background: linear-gradient(135deg, #ff6b9d, #ff4757);
+        }
+        
+        .user-perm-avatar.role-viewer {
+            background: linear-gradient(135deg, #64c8ff, #3b82f6);
+        }
+        
+        .user-perm-avatar.role-admin {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+        
+        .user-perm-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        
+        .user-perm-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .role-badge {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .role-badge.editor {
+            background: rgba(255, 107, 157, 0.2);
+            color: #ff8fab;
+        }
+        
+        .role-badge.viewer {
+            background: rgba(100, 200, 255, 0.2);
+            color: #7dd3fc;
+        }
+        
+        .role-badge.admin {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fcd34d;
+        }
+        
+        .user-perm-body {
+            padding: 14px 18px 18px;
+        }
+        
+        .perm-group {
+            margin-bottom: 14px;
+        }
+        
+        .perm-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .perm-group-title {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.35);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .perm-toggles {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .perm-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 8px 10px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+        }
+        
+        .perm-toggle-label {
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.75);
+        }
+        
+        .perm-toggle-label small {
+            display: block;
+            font-size: 0.68rem;
+            color: rgba(255, 255, 255, 0.35);
+            margin-top: 2px;
+        }
+        
+        .admin-select {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.88rem;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        .admin-select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        
+        .user-perm-footer {
+            padding: 0 18px 16px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .delete-user-btn {
+            padding: 8px 16px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            border-radius: 10px;
+            color: #f87171;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .delete-user-btn:hover {
+            background: rgba(239, 68, 68, 0.28);
+        }
+        
+        .add-user-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 920px;
+        }
+        
+        @media (max-width: 900px) {
+            .add-user-layout {
+                grid-template-columns: 1fr;
+            }
+            .admin-sidebar {
+                width: 72px;
+                padding: 16px 8px;
+            }
+            .nav-text-wrap, .admin-sidebar-label, .nav-desc {
+                display: none;
+            }
+            .admin-nav-item {
+                justify-content: center;
+                padding: 12px;
+            }
+            .admin-nav-badge {
+                position: absolute;
+                top: 4px;
+                right: 4px;
+                min-width: 18px;
+                height: 18px;
+                font-size: 0.65rem;
+            }
+            .admin-nav-item {
+                position: relative;
+            }
+        }
+        
+        .admin-form-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 22px 24px;
+        }
+        
+        .admin-form-card h4 {
+            font-size: 0.95rem;
+            color: #fff;
+            margin: 0 0 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .permission-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .permission-checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        
+        .permission-checkbox-label:hover {
+            border-color: rgba(255, 107, 157, 0.3);
+            background: rgba(255, 107, 157, 0.06);
+        }
+        
+        .permission-checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            accent-color: #ff6b9d;
+            flex-shrink: 0;
+        }
+        
+        .permission-checkbox-label .perm-label-text {
+            font-size: 0.85rem;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .permission-checkbox-label .perm-label-desc {
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.4);
+            display: block;
+            margin-top: 2px;
         }
         
         .add-user-buttons {
             display: flex;
-            gap: 16px;
-            margin-top: 30px;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .protected-badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(251, 191, 36, 0.2);
+            color: #fcd34d;
+            font-weight: 600;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        
+        .users-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 48px;
+            color: rgba(255, 255, 255, 0.4);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
         }
         
         .voice-privacy-selector select {
@@ -1879,6 +2961,27 @@
             animation: record-pulse 1s ease-in-out infinite;
         }
         
+        .voice-btn.insert {
+            background: linear-gradient(135deg, #c084fc, #7c3aed);
+            box-shadow: 0 4px 20px rgba(192, 132, 252, 0.4);
+        }
+        
+        .voice-btn.insert:hover {
+            transform: scale(1.1);
+        }
+        
+        .voice-controls-hint {
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.45);
+            margin-top: -8px;
+            margin-bottom: 16px;
+        }
+        
+        #voice-file-upload {
+            display: none;
+        }
+        
         @keyframes record-pulse {
             0%, 100% { box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4); }
             50% { box-shadow: 0 4px 30px rgba(255, 71, 87, 0.8); }
@@ -1908,6 +3011,124 @@
         .voice-item audio {
             flex: 1;
             height: 40px;
+        }
+        
+        .letter-detail-voices {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .letter-detail-voices-header {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 12px;
+        }
+        
+        .letter-detail-voice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 14px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        
+        .letter-voice-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .letter-voice-item audio {
+            flex: 1;
+            min-width: 160px;
+        }
+        
+        .letter-voice-item audio {
+            flex: 1;
+            height: 36px;
+            min-width: 0;
+        }
+        
+        .letter-voice-meta {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+        }
+        
+        .letter-voice-delete {
+            background: rgba(255, 71, 87, 0.2);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            color: #ff6b81;
+            cursor: pointer;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+        
+        .letter-voice-delete:hover {
+            background: rgba(255, 71, 87, 0.35);
+        }
+        
+        .letter-voice-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .letter-voice-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .letter-voice-btn.record {
+            background: linear-gradient(135deg, #ff6b9d, #ff4757);
+        }
+        
+        .letter-voice-btn.insert {
+            background: linear-gradient(135deg, #c084fc, #7c3aed);
+        }
+        
+        .letter-voice-btn.recording {
+            animation: record-pulse 1s ease-in-out infinite;
+        }
+        
+        .letter-voice-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+        
+        .letter-voice-hint {
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        #letter-voice-file-upload {
+            display: none;
+        }
+        
+        .letter-voice-empty {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 0.85rem;
+            padding: 12px 0;
         }
         
         .gallery-section {
@@ -2466,104 +3687,176 @@
     
     <div class="admin-container" id="admin-container" style="display: none;">
         <div class="admin-header-bar">
-            <div class="admin-logo">🔐 青泥管理系统</div>
+            <div class="admin-logo-wrap">
+                <div class="admin-logo">🔐 青泥管理系统</div>
+                <div class="admin-logo-sub">人员审核 · 权限配置 · 部门账户</div>
+            </div>
             <button class="logout-admin" onclick="adminLogout()">退出登录</button>
         </div>
+        <input type="file" id="admin-avatar-upload" accept="image/*" onchange="handleAdminAvatarUpload(event)">
         
         <div class="admin-main-content">
             <div class="admin-sidebar">
-                <div class="admin-nav-item active" onclick="showAdminTab('pending')">
+                <div class="admin-sidebar-label">功能菜单</div>
+                <div class="admin-nav-item active" data-tab="pending" onclick="showAdminTab('pending')">
                     <span class="nav-icon">📋</span>
-                    <span class="nav-text">待审核申请</span>
+                    <div class="nav-text-wrap">
+                        <span class="nav-text">待审核申请</span>
+                        <span class="nav-desc">新用户注册审批</span>
+                    </div>
+                    <span class="admin-nav-badge hidden" id="pending-count-badge">0</span>
                 </div>
-                <div class="admin-nav-item" onclick="showAdminTab('users')">
+                <div class="admin-nav-item" data-tab="users" onclick="showAdminTab('users')">
                     <span class="nav-icon">👥</span>
-                    <span class="nav-text">用户管理</span>
+                    <div class="nav-text-wrap">
+                        <span class="nav-text">权限管理</span>
+                        <span class="nav-desc">细分功能与会员</span>
+                    </div>
                 </div>
-                <div class="admin-nav-item" onclick="showAdminTab('adduser')">
+                <div class="admin-nav-item" data-tab="adduser" onclick="showAdminTab('adduser')">
                     <span class="nav-icon">➕</span>
-                    <span class="nav-text">添加用户</span>
+                    <div class="nav-text-wrap">
+                        <span class="nav-text">添加用户</span>
+                        <span class="nav-desc">手动创建账户</span>
+                    </div>
                 </div>
             </div>
             
             <div class="admin-content-area">
                 <div class="admin-tab-content" id="admin-tab-pending">
-                    <div class="admin-section-title">待审核注册申请</div>
+                    <div class="admin-page-header">
+                        <h2 class="admin-section-title">待审核注册申请</h2>
+                        <p class="admin-section-desc">审核前台自助注册的用户，通过后可分配「查看者」或「编辑者」角色。</p>
+                    </div>
+                    <div class="admin-stats-row" id="pending-stats-row">
+                        <div class="admin-stat-card highlight">
+                            <div class="admin-stat-label">待处理</div>
+                            <div class="admin-stat-value" id="stat-pending-count">0</div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-label">已通过（累计）</div>
+                            <div class="admin-stat-value" id="stat-approved-hint">—</div>
+                        </div>
+                    </div>
                     <div class="pending-list" id="pending-list">
-                        <div class="no-pending">暂无待审核的注册申请</div>
+                        <div class="no-pending">
+                            <div class="no-pending-icon">📭</div>
+                            <div>暂无待审核的注册申请</div>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="admin-tab-content" id="admin-tab-users" style="display: none;">
-                    <div class="admin-section-title">已注册用户权限管理</div>
-                    <div class="permissions-table-container">
-                        <table class="permissions-table">
-                            <thead>
-                                <tr>
-                                    <th>用户名</th>
-                                    <th>查看权限</th>
-                                    <th>编辑权限</th>
-                                    <th>上传权限</th>
-                                    <th>访客记录</th>
-                                    <th>备份导出</th>
-                                    <th>会员</th>
-                                    <th>操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="permissions-table-body">
-                                <tr><td colspan="8" style="text-align: center; color: rgba(255,255,255,0.4);">暂无用户</td></tr>
-                            </tbody>
-                        </table>
+                    <div class="admin-page-header">
+                        <h2 class="admin-section-title">用户权限管理</h2>
+                        <p class="admin-section-desc">按账户卡片管理权限：内容权限（查看/编辑/上传）与管理权限（访客/备份）分开配置。系统账户不可删改。</p>
                     </div>
+                    <div class="admin-stats-row" id="users-stats-row">
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-label">总用户</div>
+                            <div class="admin-stat-value" id="stat-total-users">0</div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-label">编辑者</div>
+                            <div class="admin-stat-value" id="stat-editor-count">0</div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-label">查看者</div>
+                            <div class="admin-stat-value" id="stat-viewer-count">0</div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-label">系统账户</div>
+                            <div class="admin-stat-value" id="stat-system-count">0</div>
+                        </div>
+                    </div>
+                    <div class="admin-toolbar">
+                        <input type="text" class="admin-search" id="admin-user-search" placeholder="搜索用户名…" oninput="filterAdminUsers()">
+                        <div class="admin-filter-tabs">
+                            <button type="button" class="admin-filter-btn active" data-filter="all" onclick="setAdminUserFilter('all', this)">全部</button>
+                            <button type="button" class="admin-filter-btn" data-filter="editor" onclick="setAdminUserFilter('editor', this)">编辑者</button>
+                            <button type="button" class="admin-filter-btn" data-filter="viewer" onclick="setAdminUserFilter('viewer', this)">查看者</button>
+                            <button type="button" class="admin-filter-btn" data-filter="admin" onclick="setAdminUserFilter('admin', this)">系统</button>
+                        </div>
+                    </div>
+                    <div class="users-grid" id="users-grid"></div>
                 </div>
                 
                 <div class="admin-tab-content" id="admin-tab-adduser" style="display: none;">
-                    <div class="admin-section-title">添加新用户</div>
-                    <div class="add-user-form">
-                        <div class="form-group">
-                            <label>用户名</label>
-                            <input type="text" id="admin-add-username" placeholder="请输入用户名（中文，最多4个字符）">
-                        </div>
-                        <div class="form-group">
-                            <label>密码</label>
-                            <input type="password" id="admin-add-password" placeholder="请输入密码（4位数字）">
-                        </div>
-                        <div class="form-group">
-                            <label>初始权限</label>
-                            <div class="permission-checkboxes">
-                                <label class="permission-checkbox-label">
-                                    <input type="checkbox" id="perm-view" checked disabled>
-                                    <span>查看权限</span>
-                                </label>
-                                <label class="permission-checkbox-label">
-                                    <input type="checkbox" id="perm-edit">
-                                    <span>编辑权限</span>
-                                </label>
-                                <label class="permission-checkbox-label">
-                                    <input type="checkbox" id="perm-upload">
-                                    <span>上传权限</span>
-                                </label>
-                                <label class="permission-checkbox-label">
-                                    <input type="checkbox" id="perm-visitor">
-                                    <span>访客记录</span>
-                                </label>
-                                <label class="permission-checkbox-label">
-                                    <input type="checkbox" id="perm-backup">
-                                    <span>备份导出</span>
-                                </label>
+                    <div class="admin-page-header">
+                        <h2 class="admin-section-title">添加新用户</h2>
+                        <p class="admin-section-desc">直接创建账户并预设权限，无需走注册审核流程。</p>
+                    </div>
+                    <div class="add-user-layout">
+                        <div class="admin-form-card">
+                            <h4>基本信息</h4>
+                            <div class="form-group">
+                                <label>用户名</label>
+                                <input type="text" id="admin-add-username" placeholder="中文姓名，最多 4 个字">
+                            </div>
+                            <div class="form-group">
+                                <label>登录密码</label>
+                                <input type="password" id="admin-add-password" placeholder="4 位数字密码">
+                            </div>
+                            <div class="form-group">
+                                <label>会员等级</label>
+                                <select class="admin-select" id="admin-add-viplevel">
+                                    <option value="0">普通用户</option>
+                                    <option value="1">⭐ 会员</option>
+                                    <option value="2">⭐⭐ 超级会员</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label>会员等级</label>
-                            <select id="admin-add-viplevel">
-                                <option value="0">普通用户</option>
-                                <option value="1">⭐ 会员</option>
-                                <option value="2">⭐⭐ 超级会员</option>
-                            </select>
-                        </div>
-                        <div class="add-user-buttons">
-                            <button class="cancel-btn" onclick="resetAddUserForm()">重置</button>
-                            <button class="confirm-btn" onclick="adminAddUser()">确认添加</button>
+                        <div class="admin-form-card">
+                            <h4>权限配置</h4>
+                            <div class="perm-group">
+                                <div class="perm-group-title">内容权限</div>
+                                <div class="permission-grid">
+                                    <label class="permission-checkbox-label">
+                                        <input type="checkbox" id="perm-view" checked disabled>
+                                        <span>
+                                            <span class="perm-label-text">查看</span>
+                                            <span class="perm-label-desc">浏览信件与媒体</span>
+                                        </span>
+                                    </label>
+                                    <label class="permission-checkbox-label">
+                                        <input type="checkbox" id="perm-edit">
+                                        <span>
+                                            <span class="perm-label-text">编辑</span>
+                                            <span class="perm-label-desc">修改信件正文</span>
+                                        </span>
+                                    </label>
+                                    <label class="permission-checkbox-label">
+                                        <input type="checkbox" id="perm-upload">
+                                        <span>
+                                            <span class="perm-label-text">上传</span>
+                                            <span class="perm-label-desc">图片视频与语音区</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="perm-group" style="margin-top: 16px;">
+                                <div class="perm-group-title">管理权限</div>
+                                <div class="permission-grid">
+                                    <label class="permission-checkbox-label">
+                                        <input type="checkbox" id="perm-visitor">
+                                        <span>
+                                            <span class="perm-label-text">访客记录</span>
+                                            <span class="perm-label-desc">查看访问统计</span>
+                                        </span>
+                                    </label>
+                                    <label class="permission-checkbox-label">
+                                        <input type="checkbox" id="perm-backup">
+                                        <span>
+                                            <span class="perm-label-text">备份导出</span>
+                                            <span class="perm-label-desc">导出站点数据</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="add-user-buttons">
+                                <button type="button" class="cancel-btn" onclick="resetAddUserForm()">重置</button>
+                                <button type="button" class="confirm-btn" onclick="adminAddUser()">确认添加</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2592,11 +3885,38 @@
                         <input type="radio" name="privacy" value="2">
                         <span>⭐⭐ 超级会员可见</span>
                     </label>
+                    <label class="privacy-option">
+                        <input type="radio" name="privacy" value="3">
+                        <span>👥 仅好友可见</span>
+                    </label>
                 </div>
             </div>
             <div class="privacy-modal-footer">
                 <button class="cancel-btn" onclick="closePrivacyModal()">取消</button>
                 <button class="confirm-btn" onclick="confirmUpload()">确认上传</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="friends-modal" id="friends-modal">
+        <div class="friends-modal-content">
+            <div class="friends-modal-header">
+                <h3>👥 好友</h3>
+                <button type="button" class="close-btn" onclick="closeFriendsModal()">×</button>
+            </div>
+            <div class="friends-tabs">
+                <button type="button" class="friends-tab active" data-panel="list" onclick="switchFriendsTab('list', this)">我的好友</button>
+                <button type="button" class="friends-tab" data-panel="requests" onclick="switchFriendsTab('requests', this)">好友申请<span class="friend-badge-dot" id="friend-tab-badge" style="position:static;margin-left:4px;display:none;">0</span></button>
+                <button type="button" class="friends-tab" data-panel="add" onclick="switchFriendsTab('add', this)">添加好友</button>
+            </div>
+            <div class="friends-panel active" id="friends-panel-list"></div>
+            <div class="friends-panel" id="friends-panel-requests"></div>
+            <div class="friends-panel" id="friends-panel-add">
+                <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin:0 0 12px;">输入对方登录用户名，发送好友申请（需对方同意）</p>
+                <div class="friends-add-row">
+                    <input type="text" id="friend-add-username" placeholder="中文用户名，最多4字" maxlength="4">
+                    <button type="button" class="confirm-btn" onclick="sendFriendRequest()">发送申请</button>
+                </div>
             </div>
         </div>
     </div>
@@ -2641,6 +3961,73 @@
         </div>
     </div>
     
+    <div class="letter-detail-modal" id="letter-detail-modal" style="display: none;">
+        <div class="letter-detail-content">
+            <div class="letter-detail-header">
+                <h3 id="letter-detail-title"></h3>
+                <span id="letter-detail-privacy" class="letter-privacy"></span>
+                <button class="close-btn" onclick="closeLetterDetailModal()">×</button>
+            </div>
+            <div class="letter-detail-body">
+                <p id="letter-detail-content"></p>
+                <div class="letter-detail-voices">
+                    <div class="letter-detail-voices-header">🎤 信件语音（查看者可留言）</div>
+                    <div class="letter-detail-voice-list" id="letter-detail-voice-list"></div>
+                    <div class="letter-voice-controls" id="letter-voice-controls">
+                        <button type="button" class="letter-voice-btn record" id="letter-voice-record-btn" onclick="toggleLetterVoiceRecording()" title="录制语音">
+                            <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3S13.66 8 12 8 9 9.34 9 11s1.34 3 3 3zm5.66-1.34l-1.75-1.75c-.78-.78-2.05-.78-2.83 0L7 15.95c-.78.78-.78 2.05 0 2.83l1.75 1.75c.78.78 2.05.78 2.83 0l6.66-6.66c.79-.78.79-2.04 0-2.83z"/></svg>
+                        </button>
+                        <label class="letter-voice-btn insert" for="letter-voice-file-upload" title="插入本地录音">
+                            <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+                        </label>
+                        <input type="file" id="letter-voice-file-upload" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.webm" onchange="handleLetterInsertVoiceUpload(event)">
+                    </div>
+                    <p class="letter-voice-hint" id="letter-voice-hint">登录后可为本信件添加语音；仅可删除自己添加的（龚建东可删全部）</p>
+                </div>
+            </div>
+            <div class="letter-detail-footer">
+                <span id="letter-detail-date"></span>
+                <div class="letter-detail-actions">
+                    <button class="letter-action-btn" id="letter-detail-edit-btn" onclick="openEditLetterModalFromDetail()">编辑</button>
+                    <button class="letter-action-btn" onclick="closeLetterDetailModal()">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="privacy-modal" id="batch-privacy-modal" style="display: none;">
+        <div class="privacy-modal-content">
+            <div class="privacy-modal-header">
+                <h3>选择批量上传权限</h3>
+                <button class="close-btn" onclick="closeBatchPrivacyModal()">×</button>
+            </div>
+            <div class="privacy-modal-body">
+                <div class="privacy-options">
+                    <label class="privacy-option">
+                        <input type="radio" name="batch-privacy" value="0" checked>
+                        <span>🔓 公开</span>
+                    </label>
+                    <label class="privacy-option">
+                        <input type="radio" name="batch-privacy" value="1">
+                        <span>⭐ 会员</span>
+                    </label>
+                    <label class="privacy-option">
+                        <input type="radio" name="batch-privacy" value="2">
+                        <span>⭐⭐ 超级会员</span>
+                    </label>
+                    <label class="privacy-option">
+                        <input type="radio" name="batch-privacy" value="3">
+                        <span>👥 仅好友可见</span>
+                    </label>
+                </div>
+            </div>
+            <div class="privacy-modal-footer">
+                <button class="cancel-btn" onclick="closeBatchPrivacyModal()">取消</button>
+                <button class="confirm-btn" onclick="confirmBatchUpload()">确认上传</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="notification-panel" id="notification-panel" style="display: none;">
         <div class="notification-header">
             <h3>🔔 通知</h3>
@@ -2674,6 +4061,39 @@
         </div>
     </div>
     
+    <div class="sync-settings-modal" id="sync-settings-modal" style="display: none;">
+        <div class="sync-settings-content">
+            <div class="sync-settings-header">
+                <h3>☁️ 云端同步设置</h3>
+                <button class="close-btn" onclick="closeSyncSettings()">×</button>
+            </div>
+            <div class="sync-settings-body">
+                <p style="font-size: 0.9rem; line-height: 1.6; color: rgba(255,255,255,0.75); margin-bottom: 16px;">
+                    使用免费的 <strong>GitHub Gist</strong> 同步数据（无需阿里云）。先新建一个 Gist，把 ID 填到下面；编辑、上传需要填写 Token。
+                </p>
+                <div class="form-group">
+                    <label>Gist ID</label>
+                    <input type="text" id="sync-gist-id" placeholder="Gist URL 最后一段，例如 a1b2c3d4e5f6">
+                    <span class="form-hint">github.com/你的用户名/<strong>这一段</strong></span>
+                </div>
+                <div class="form-group">
+                    <label>GitHub Token（编辑必填）</label>
+                    <input type="password" id="sync-github-token" placeholder="ghp_ 开头的 Personal Access Token">
+                    <span class="form-hint">GitHub → Settings → Developer settings → Personal access tokens，勾选 gist 权限</span>
+                </div>
+                <div class="sync-status">
+                    <span id="sync-status-icon">⚠️</span>
+                    <span id="sync-status-text">未配置同步</span>
+                </div>
+            </div>
+            <div class="sync-settings-footer">
+                <button class="cancel-btn" onclick="closeSyncSettings()">取消</button>
+                <button class="confirm-btn" onclick="saveSyncSettings()">保存设置</button>
+                <button class="confirm-btn" onclick="testCloudAndReload()">测试并拉取</button>
+            </div>
+        </div>
+    </div>
+    
     <audio id="bgm" loop></audio>
     
     <div class="music-change-btn" id="music-change-btn" onclick="openMusicModal()">
@@ -2689,12 +4109,22 @@
     
     <div class="main-container" id="main-container">
         <div class="user-info" id="user-info">
-            <span id="user-name">用户</span>
-            <span class="role" id="user-role">查看者</span>
+            <div class="user-info-profile">
+                <label class="user-avatar-wrap" for="avatar-upload" title="点击更换头像">
+                    <span id="header-user-avatar"></span>
+                </label>
+                <input type="file" id="avatar-upload" accept="image/*" onchange="handleAvatarUpload(event)">
+                <div class="user-info-text">
+                    <span id="user-name">用户</span>
+                    <span class="role" id="user-role">查看者</span>
+                </div>
+            </div>
             <span class="cloud-status" id="cloud-status" title="云端状态">☁️</span>
             <span class="sync-btn" id="sync-btn" onclick="syncAllDataToCloud()">🔄</span>
             <span class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="切换主题">🌙</span>
             <span class="backup-btn" id="backup-btn" onclick="exportData()" title="备份数据">📥</span>
+            <span class="sync-settings-btn" id="sync-settings-btn" onclick="openSyncSettings()" title="云端同步设置">⚙️</span>
+            <span class="friends-btn" id="friends-btn" onclick="openFriendsModal()" title="好友" style="display:none;">👥<span class="friend-badge-dot" id="friend-request-badge">0</span></span>
             <span class="logout-btn" onclick="logout()">退出登录</span>
         </div>
         
@@ -2707,7 +4137,7 @@
                 <span id="weather-icon">☀️</span>
                 <span id="weather-text">加载中...</span>
                 <span id="weather-temp">--°C</span>
-                <span id="weather-location">定位中...</span>
+                <span id="weather-location" onclick="openLocationSelector()" title="点击切换城市">📍 定位中...</span>
             </div>
         </div>
         
@@ -2723,7 +4153,7 @@
                     <div class="letter-tab active" data-id="all">全部信件</div>
                 </div>
                 <div class="letters-container" id="letters-container">
-                    <div class="letter-card" data-id="default">
+                    <div class="letter-card" data-id="default" onclick="openLetterDetailModal('default')">
                         <div class="letter-card-header">
                             <h3>亲爱的你</h3>
                             <span class="letter-privacy public">公开</span>
@@ -2731,8 +4161,9 @@
                         <p class="letter-preview">分开的这些日子里，我每天都在想你...</p>
                         <div class="letter-card-footer">
                             <span class="letter-date">2024-01-15</span>
-                            <div class="letter-actions">
-                                <button class="letter-action-btn" onclick="openEditLetterModal('default')">编辑</button>
+                            <div class="letter-actions" id="default-letter-actions">
+                                <button class="letter-action-btn" onclick="event.stopPropagation(); openEditLetterModal('default')">编辑</button>
+                                <button class="letter-action-btn" onclick="event.stopPropagation(); deleteLetter('default')">删除</button>
                             </div>
                         </div>
                     </div>
@@ -2749,16 +4180,24 @@
                             <option value="0">🔓 公开</option>
                             <option value="1">⭐ 会员</option>
                             <option value="2">⭐⭐ 超会</option>
+                            <option value="3">👥 仅好友</option>
                         </select>
                     </div>
                 </div>
                 <div class="voice-controls">
-                    <button class="voice-btn record" id="record-btn" onclick="toggleRecording()">
+                    <button class="voice-btn record" id="record-btn" onclick="toggleRecording()" title="点击开始/结束录制">
                         <svg viewBox="0 0 24 24">
                             <path d="M12 14c1.66 0 2.99-1.34 2.99-3S13.66 8 12 8 9 9.34 9 11s1.34 3 3 3zm5.66-1.34l-1.75-1.75c-.78-.78-2.05-.78-2.83 0L7 15.95c-.78.78-.78 2.05 0 2.83l1.75 1.75c.78.78 2.05.78 2.83 0l6.66-6.66c.79-.78.79-2.04 0-2.83z"/>
                         </svg>
                     </button>
+                    <label class="voice-btn insert" id="insert-voice-label" for="voice-file-upload" title="从手机或电脑选择已有录音">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/>
+                        </svg>
+                    </label>
+                    <input type="file" id="voice-file-upload" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.webm" onchange="handleInsertVoiceUpload(event)">
                 </div>
+                <p class="voice-controls-hint">麦克风录制 · 或点击右侧按钮插入本地录音</p>
                 <div class="voice-list" id="voice-list"></div>
             </div>
             
@@ -2870,8 +4309,19 @@
         };
         
         var currentUser = null;
+        
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
         var isPlaying = false;
         var isRecording = false;
+        var isLetterVoiceRecording = false;
+        var voiceRecordingTarget = null;
         var uploadFile = null;
         var uploadType = '';
         var voicePrivacy = 0;
@@ -2887,20 +4337,18 @@
             MUSIC_URL: 'love_letter_music_url',
             MEDIA_ITEMS: 'love_letter_media',
             VOICE_MESSAGES: 'love_letter_voices',
+            LETTER_VOICES_DEFAULT: 'love_letter_default_voices',
+            LETTERS: 'love_letter_letters',
+            FRIENDS: 'love_letter_friends',
             LOGGED_USER: 'love_letter_logged_user'
         };
         
-        var CLOUD_CONFIG = {
-            bucket: 'love-letter-storage1',
-            region: 'oss-cn-hangzhou',
-            endpoint: 'oss-cn-hangzhou.aliyuncs.com',
-            dataFile: 'love-letter-data.json',
-            accessKeyId: 'LTAI5t9BC5Ab9rnViGZMBJca',
-            accessKeySecret: 'pLqWWVVCjYDe4u9KLP4KgywSb2XM14',
-            websiteUrl: 'https://love-letter-storage1.oss-cn-hangzhou.aliyuncs.com'
-        };
-        
-        var ossClient;
+        var GIST_DATA_FILE = 'love-letter-data.json';
+        var GIST_USERS_FILE = 'love-letter-users.json';
+        var GIST_ID = '';
+        var GITHUB_TOKEN = '';
+        var cloudStorageAvailable = false;
+        var isSyncing = false;
         
         var db;
         var DB_NAME = 'LoveLetterDB';
@@ -3020,25 +4468,28 @@
             });
         }
         
-        function initCloudStorage() {
-            try {
-                console.log('开始初始化云端存储...');
-                console.log('配置信息:', CLOUD_CONFIG);
-                
-                ossClient = new OSS({
-                    region: CLOUD_CONFIG.region,
-                    bucket: CLOUD_CONFIG.bucket,
-                    endpoint: CLOUD_CONFIG.endpoint,
-                    accessKeyId: CLOUD_CONFIG.accessKeyId,
-                    accessKeySecret: CLOUD_CONFIG.accessKeySecret,
-                    secure: true
-                });
-                console.log('✓ OSS客户端创建成功');
-                checkCloudConnection();
-            } catch (e) {
-                console.error('❌ 云端存储初始化失败:', e);
-                setCloudStatus(false);
+        function reloadGistSettings() {
+            GIST_ID = loadFromStorage('gist_id', '');
+            GITHUB_TOKEN = loadFromStorage('github_token', '');
+            cloudStorageAvailable = !!GIST_ID;
+        }
+        
+        function getGistHeaders() {
+            var headers = { 'Content-Type': 'application/json' };
+            if (GITHUB_TOKEN) {
+                headers['Authorization'] = 'token ' + GITHUB_TOKEN;
             }
+            return headers;
+        }
+        
+        function initCloudStorage() {
+            reloadGistSettings();
+            if (!GIST_ID) {
+                setCloudStatus(false);
+                updateSyncSettingsStatus(false);
+                return;
+            }
+            checkCloudConnection();
         }
         
         function setCloudStatus(connected) {
@@ -3047,111 +4498,232 @@
                 if (connected) {
                     statusEl.textContent = '☁️';
                     statusEl.className = 'cloud-status connected';
-                    statusEl.title = '云端已连接';
+                    statusEl.title = 'Gist 云端已连接';
                 } else {
                     statusEl.textContent = '⚠️';
                     statusEl.className = 'cloud-status disconnected';
-                    statusEl.title = '云端未连接';
+                    statusEl.title = '未连接，请点击 ⚙️ 配置 Gist';
                 }
             }
         }
         
-        async function checkCloudConnection() {
-            if (!ossClient) {
-                console.log('❌ ossClient 未初始化');
-                setCloudStatus(false);
-                return;
+        function updateSyncSettingsStatus(connected) {
+            var icon = document.getElementById('sync-status-icon');
+            var text = document.getElementById('sync-status-text');
+            if (!icon || !text) return;
+            if (connected) {
+                icon.textContent = '✅';
+                text.textContent = 'Gist 连接正常';
+            } else if (!GIST_ID) {
+                icon.textContent = '⚠️';
+                text.textContent = '请填写 Gist ID';
+            } else {
+                icon.textContent = '❌';
+                text.textContent = 'Gist 连接失败，请检查 ID 或 Token';
             }
-            
-            try {
-                console.log('正在测试云端连接...');
-                await ossClient.list({ maxKeys: 1 });
-                setCloudStatus(true);
-                console.log('✓ 云端连接正常');
-                showToast('✓ 云端已连接');
-            } catch (e) {
-                console.error('❌ 云端连接失败:', e);
-                console.error('错误详情:', e.message, e.code);
+        }
+        
+        async function checkCloudConnection() {
+            if (!GIST_ID) {
                 setCloudStatus(false);
-                showToast('⚠️ 云端连接失败: ' + (e.message || '网络错误'));
+                updateSyncSettingsStatus(false);
+                return false;
+            }
+            try {
+                var response = await fetch('https://api.github.com/gists/' + GIST_ID, {
+                    headers: getGistHeaders()
+                });
+                var ok = response.ok;
+                setCloudStatus(ok);
+                updateSyncSettingsStatus(ok);
+                return ok;
+            } catch (e) {
+                console.error('Gist 连接失败:', e);
+                setCloudStatus(false);
+                updateSyncSettingsStatus(false);
+                return false;
+            }
+        }
+        
+        async function patchGistFile(fileName, content) {
+            if (!GIST_ID) return false;
+            if (!GITHUB_TOKEN) {
+                console.warn('未配置 GitHub Token，无法写入 Gist');
+                return false;
+            }
+            var response = await fetch('https://api.github.com/gists/' + GIST_ID, {
+                method: 'PATCH',
+                headers: getGistHeaders(),
+                body: JSON.stringify({
+                    files: (function() {
+                        var f = {};
+                        f[fileName] = { content: content };
+                        return f;
+                    })()
+                })
+            });
+            return response.ok;
+        }
+        
+        async function getGistFile(fileName) {
+            if (!GIST_ID) return null;
+            var response = await fetch('https://api.github.com/gists/' + GIST_ID, {
+                headers: getGistHeaders()
+            });
+            if (!response.ok) return null;
+            var gist = await response.json();
+            var file = gist.files[fileName];
+            if (!file || !file.content) return null;
+            return file.content;
+        }
+        
+        async function saveToCloud(data) {
+            if (!GIST_ID) {
+                console.log('未配置 Gist ID，跳过保存');
+                return false;
+            }
+            try {
+                var ok = await patchGistFile(GIST_DATA_FILE, JSON.stringify(data, null, 2));
+                if (ok) console.log('✓ 数据已保存到 Gist');
+                return ok;
+            } catch (e) {
+                console.error('保存到 Gist 失败:', e);
+                return false;
             }
         }
         
         async function loadFromCloud() {
-            if (!ossClient) return null;
-            
+            if (!GIST_ID) return null;
             try {
-                var result = await ossClient.get(CLOUD_CONFIG.dataFile);
-                var data = JSON.parse(result.content);
-                console.log('从云端加载数据成功');
-                return data;
+                var content = await getGistFile(GIST_DATA_FILE);
+                return content ? JSON.parse(content) : null;
             } catch (e) {
-                console.error('从云端加载数据失败:', e);
+                console.error('从 Gist 加载失败:', e);
                 return null;
-            }
-        }
-        
-        async function saveToCloud(data) {
-            if (!ossClient) {
-                console.error('❌ ossClient 未初始化');
-                return false;
-            }
-            
-            try {
-                var jsonString = JSON.stringify(data, null, 2);
-                console.log('准备同步数据，大小:', jsonString.length, '字节');
-                console.log('媒体文件数量:', data.mediaItems ? data.mediaItems.length : 0);
-                console.log('语音消息数量:', data.voiceMessages ? data.voiceMessages.length : 0);
-                
-                var blob = new Blob([jsonString], { type: 'application/json' });
-                await ossClient.put(CLOUD_CONFIG.dataFile, blob);
-                console.log('✓ 数据同步到云端成功');
-                return true;
-            } catch (e) {
-                console.error('❌ 数据同步到云端失败:', e);
-                console.error('错误详情:', e.message, e.code);
-                return false;
             }
         }
         
         async function uploadFileToCloud(file, folder) {
-            if (!ossClient) return null;
-            
-            try {
-                var fileName = Date.now() + '-' + file.name;
-                var objectKey = folder + '/' + fileName;
-                await ossClient.put(objectKey, file);
-                var url = 'https://' + CLOUD_CONFIG.bucket + '.' + CLOUD_CONFIG.endpoint + '/' + objectKey;
-                return { url: url, key: objectKey };
-            } catch (e) {
-                console.error('文件上传失败:', e);
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('文件大小不能超过10MB');
                 return null;
             }
+            return new Promise(function(resolve) {
+                if (file.type.startsWith('image/')) {
+                    compressImage(file, function(dataUrl) {
+                        resolve({
+                            url: dataUrl,
+                            key: folder + '/' + Date.now() + '-' + file.name
+                        });
+                    });
+                } else {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        resolve({
+                            url: e.target.result,
+                            key: folder + '/' + Date.now() + '-' + file.name
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        function compressImage(file, callback) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var maxWidth = 1200;
+                    var maxHeight = 1200;
+                    var width = img.width;
+                    var height = img.height;
+                    
+                    if (width > height && width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    } else if (height > maxHeight) {
+                        width = (width * maxHeight) / height;
+                        height = maxHeight;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    var dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    callback(dataUrl);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
         
         async function deleteFileFromCloud(objectKey) {
-            if (!ossClient) return;
-            
-            try {
-                await ossClient.delete(objectKey);
-                console.log('文件删除成功:', objectKey);
-            } catch (e) {
-                console.error('文件删除失败:', e);
+            console.log('媒体保存在 Gist JSON 中，删除本地记录即可:', objectKey);
+        }
+        
+        function openSyncSettings() {
+            reloadGistSettings();
+            document.getElementById('sync-gist-id').value = GIST_ID;
+            document.getElementById('sync-github-token').value = GITHUB_TOKEN;
+            updateSyncSettingsStatus(!!GIST_ID);
+            document.getElementById('sync-settings-modal').style.display = 'flex';
+            if (GIST_ID) checkCloudConnection();
+        }
+        
+        function closeSyncSettings() {
+            document.getElementById('sync-settings-modal').style.display = 'none';
+        }
+        
+        function saveSyncSettings() {
+            var gistId = document.getElementById('sync-gist-id').value.trim();
+            var token = document.getElementById('sync-github-token').value.trim();
+            if (!gistId) {
+                showToast('请输入 Gist ID');
+                return;
             }
+            saveToStorage('gist_id', gistId);
+            saveToStorage('github_token', token);
+            reloadGistSettings();
+            closeSyncSettings();
+            checkCloudConnection();
+            showToast('✓ 同步设置已保存');
+        }
+        
+        async function testCloudAndReload() {
+            reloadGistSettings();
+            var ok = await checkCloudConnection();
+            if (!ok) {
+                showToast('连接失败，请检查 Gist ID；若要上传请填写 Token');
+                return;
+            }
+            closeSyncSettings();
+            await loadAllDataFromCloud();
         }
         
         async function syncAllDataToCloud() {
-            if (!ossClient) {
-                showToast('⚠️ 云端存储未初始化');
-                setCloudStatus(false);
+            if (!GIST_ID) {
+                showToast('请先点击 ⚙️ 配置 Gist ID');
                 return;
             }
+            if (!GITHUB_TOKEN) {
+                showToast('保存到云端需要 GitHub Token');
+                return;
+            }
+            if (isSyncing) return;
+            isSyncing = true;
+            showToast('正在同步数据...');
             
             try {
-                showToast('正在同步到云端...');
                 var mediaItems = await getAllMediaFromDB();
                 var voiceMessages = await getAllVoicesFromDB();
-                var letterContent = document.getElementById('letter-content').textContent;
+                
+                var letterContentEl = document.getElementById('letter-content');
+                var letterContent = letterContentEl ? letterContentEl.textContent : '';
+                
                 var musicUrl = bgm.src;
                 
                 var data = {
@@ -3159,6 +4731,8 @@
                     musicUrl: musicUrl,
                     mediaItems: mediaItems,
                     voiceMessages: voiceMessages,
+                    letterVoicesDefault: getLetterVoices('default'),
+                    letters: loadFromStorage(STORAGE_KEYS.LETTERS, []),
                     lastUpdated: new Date().toISOString(),
                     version: Date.now(),
                     savedBy: currentUser ? currentUser.username : 'unknown'
@@ -3179,17 +4753,17 @@
                 console.error('同步数据失败:', e);
                 setCloudStatus(false);
                 showToast('⚠️ 同步失败: ' + e.message);
+            } finally {
+                isSyncing = false;
             }
         }
         
         async function loadAllDataFromCloud() {
-            if (!ossClient) {
-                showToast('云端存储未初始化');
+            if (!GIST_ID) {
                 return false;
             }
-            
             try {
-                showToast('正在从云端加载数据...');
+                showToast('正在加载数据...');
                 var data = await loadFromCloud();
                 if (data) {
                     var hasUpdates = false;
@@ -3224,11 +4798,23 @@
                             }
                         }
                     }
+                    if (data.letterVoicesDefault) {
+                        setLetterVoices('default', data.letterVoicesDefault);
+                        hasUpdates = true;
+                    }
+                    if (data.letters) {
+                        saveToStorage(STORAGE_KEYS.LETTERS, data.letters);
+                        loadLettersFromStorage();
+                        hasUpdates = true;
+                    }
                     
                     if (hasUpdates) {
                         showToast('✓ 已从云端同步数据');
                         loadMediaGallery();
                         loadVoiceMessagesUI();
+                        if (viewingLetterId) {
+                            renderLetterDetailVoices(viewingLetterId);
+                        }
                     } else {
                         showToast('数据已是最新');
                     }
@@ -3353,14 +4939,13 @@
                         src: result.url,
                         key: result.key,
                         name: file.name,
-                        privacy: privacyLevel
+                        privacy: privacyLevel,
+                        author: currentUser.username
                     };
                     await saveMediaToDB(mediaItem);
-                    addMediaToGallery(result.url, type, file.name, mediaItem.id, privacyLevel);
+                    addMediaToGallery(result.url, type, file.name, mediaItem.id, privacyLevel, currentUser.username);
                     syncAllDataToCloud();
-                    
-                    var privacyText = privacyLevel === 0 ? '公开' : privacyLevel === 1 ? '会员可见' : '超级会员可见';
-                    showToast('上传成功，权限: ' + privacyText);
+                    showToast('上传成功，权限: ' + formatPrivacyHint(privacyLevel));
                 } else {
                     showToast('上传失败，请重试');
                 }
@@ -3386,8 +4971,15 @@
             document.getElementById('letter-modal-title').textContent = '编辑信件';
             
             if (letterId === 'default') {
-                document.getElementById('letter-title').value = '亲爱的你';
-                document.getElementById('letter-content-input').value = '亲爱的你：\n\n分开的这些日子里，我每天都在想你。每一个安静的夜晚，每一个熟悉的街角，都会让我想起我们曾经一起走过的路。我知道，是我的幼稚和不懂珍惜，让你失望了。\n\n我常常在想，如果当初我能更成熟一点，更懂得包容和理解，我们是不是就不会走到今天这一步。你是我生命中最特别的存在，是我想要用一生去守护的人。\n\n我知道现在说这些可能已经太晚，但我真的无法放下你。我愿意改变，愿意为了你变成更好的人。如果你还愿意给我一次机会，我一定会用我的余生去证明，你选择我，是正确的决定。\n\n永远爱你的人';
+                document.getElementById('letter-title').value = document.querySelector('.letter-card[data-id="default"] h3').textContent;
+                document.getElementById('letter-content-input').value = document.getElementById('letter-content').textContent;
+            } else {
+                var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
+                var letter = letters.find(function(l) { return l.id === letterId; });
+                if (letter) {
+                    document.getElementById('letter-title').value = letter.title;
+                    document.getElementById('letter-content-input').value = letter.content;
+                }
             }
             
             document.getElementById('letter-modal').style.display = 'flex';
@@ -3395,7 +4987,335 @@
         
         function closeLetterModal() {
             document.getElementById('letter-modal').style.display = 'none';
+            document.getElementById('letter-title').value = '';
+            document.getElementById('letter-content-input').value = '';
+            document.getElementById('letter-modal-title').textContent = '新建信件';
             editingLetterId = null;
+        }
+        
+        var viewingLetterId = null;
+        
+        function openLetterDetailModal(letterId) {
+            viewingLetterId = letterId;
+            var letter = null;
+            
+            if (letterId === 'default') {
+                letter = {
+                    id: 'default',
+                    title: document.querySelector('.letter-card[data-id="default"] h3').textContent,
+                    content: document.getElementById('letter-content').textContent,
+                    date: document.querySelector('.letter-card[data-id="default"] .letter-date').textContent,
+                    privacy: 0
+                };
+            } else {
+                var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
+                letter = letters.find(function(l) { return l.id === letterId; });
+            }
+            
+            if (letter) {
+                if (!canViewLetter(letter)) {
+                    showToast('无权查看该信件');
+                    return;
+                }
+                document.getElementById('letter-detail-title').textContent = letter.title;
+                document.getElementById('letter-detail-privacy').textContent = getPrivacyText(letter.privacy);
+                document.getElementById('letter-detail-privacy').className = 'letter-privacy ' + getPrivacyClass(letter.privacy);
+                document.getElementById('letter-detail-content').textContent = letter.content;
+                document.getElementById('letter-detail-date').textContent = letter.date;
+                var detailEditBtn = document.getElementById('letter-detail-edit-btn');
+                if (detailEditBtn) {
+                    detailEditBtn.style.display = (currentUser && currentUser.role === 'editor') ? 'inline-block' : 'none';
+                }
+                renderLetterDetailVoices(letterId);
+                document.getElementById('letter-detail-modal').style.display = 'flex';
+            }
+        }
+        
+        function closeLetterDetailModal() {
+            if (isLetterVoiceRecording) {
+                stopLetterVoiceRecording();
+            }
+            document.getElementById('letter-detail-modal').style.display = 'none';
+            viewingLetterId = null;
+        }
+        
+        function getDefaultLetterMeta() {
+            var card = document.querySelector('.letter-card[data-id="default"]');
+            return {
+                id: 'default',
+                title: card ? card.querySelector('h3').textContent : '亲爱的你',
+                content: document.getElementById('letter-content').textContent,
+                date: card ? card.querySelector('.letter-date').textContent : '',
+                privacy: 0
+            };
+        }
+        
+        function getLetterVoices(letterId) {
+            if (letterId === 'default') {
+                return loadFromStorage(STORAGE_KEYS.LETTER_VOICES_DEFAULT, []);
+            }
+            var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
+            var letter = letters.find(function(l) { return l.id === letterId; });
+            return letter && letter.voices ? letter.voices.slice() : [];
+        }
+        
+        function setLetterVoices(letterId, voices) {
+            if (letterId === 'default') {
+                saveToStorage(STORAGE_KEYS.LETTER_VOICES_DEFAULT, voices);
+                return;
+            }
+            var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
+            var idx = letters.findIndex(function(l) { return l.id === letterId; });
+            if (idx === -1) {
+                letters.push({ id: letterId, voices: voices });
+            } else {
+                letters[idx].voices = voices;
+            }
+            saveToStorage(STORAGE_KEYS.LETTERS, letters);
+        }
+        
+        function canViewLetter(letter) {
+            if (!currentUser || !letter) return false;
+            if (currentUser.role === 'editor') return true;
+            var userVipLevel = currentUser.vipLevel || 0;
+            return (letter.privacy || 0) <= userVipLevel;
+        }
+        
+        function canAddLetterVoice() {
+            if (!currentUser || currentUser.role === 'admin') return false;
+            if (!viewingLetterId) return false;
+            var letter = viewingLetterId === 'default' ? getDefaultLetterMeta() : loadFromStorage(STORAGE_KEYS.LETTERS, []).find(function(l) { return l.id === viewingLetterId; });
+            return canViewLetter(letter);
+        }
+        
+        function canDeleteLetterVoice(voice) {
+            if (!currentUser || currentUser.role === 'admin' || !voice) return false;
+            if (currentUser.role === 'editor') return true;
+            return voice.author === currentUser.username;
+        }
+        
+        function updateLetterVoiceControlsUI() {
+            var controls = document.getElementById('letter-voice-controls');
+            var hint = document.getElementById('letter-voice-hint');
+            if (!controls || !hint) return;
+            if (canAddLetterVoice()) {
+                controls.style.display = 'flex';
+                hint.textContent = '可录制或插入语音；仅可删除自己添加的（龚建东可删全部）';
+            } else if (!currentUser) {
+                controls.style.display = 'none';
+                hint.textContent = '登录后可为本信件添加语音';
+            } else if (currentUser.role === 'admin') {
+                controls.style.display = 'none';
+                hint.textContent = '管理员账号不参与信件语音留言';
+            } else {
+                controls.style.display = 'none';
+                hint.textContent = '当前权限无法向该信件添加语音';
+            }
+        }
+        
+        function renderLetterDetailVoices(letterId) {
+            var listEl = document.getElementById('letter-detail-voice-list');
+            if (!listEl) return;
+            var voices = getLetterVoices(letterId);
+            listEl.innerHTML = '';
+            if (voices.length === 0) {
+                listEl.innerHTML = '<p class="letter-voice-empty">还没有语音留言，来做第一个吧~</p>';
+                updateLetterVoiceControlsUI();
+                return;
+            }
+            voices.sort(function(a, b) {
+                return new Date(b.timestamp) - new Date(a.timestamp);
+            });
+            voices.forEach(function(voice) {
+                var item = document.createElement('div');
+                item.className = 'letter-voice-item';
+                item.dataset.id = voice.id;
+                var audio = document.createElement('audio');
+                audio.controls = true;
+                audio.src = voice.data;
+                var meta = document.createElement('span');
+                var authorWrap = document.createElement('div');
+                authorWrap.className = 'letter-voice-author';
+                authorWrap.innerHTML = getUserAvatarHtml(voice.author || '未知', 'sm') +
+                    '<span class="letter-voice-meta">' + (voice.author || '未知') + '</span>';
+                var timeSpan = document.createElement('span');
+                timeSpan.className = 'letter-voice-meta';
+                timeSpan.style.marginLeft = 'auto';
+                timeSpan.textContent = formatVoiceTime(voice.timestamp);
+                item.appendChild(audio);
+                item.appendChild(authorWrap);
+                item.appendChild(timeSpan);
+                if (canDeleteLetterVoice(voice)) {
+                    var delBtn = document.createElement('button');
+                    delBtn.type = 'button';
+                    delBtn.className = 'letter-voice-delete';
+                    delBtn.textContent = '删除';
+                    delBtn.onclick = function() {
+                        deleteLetterVoice(letterId, voice.id);
+                    };
+                    item.appendChild(delBtn);
+                }
+                listEl.appendChild(item);
+            });
+            updateLetterVoiceControlsUI();
+        }
+        
+        function formatVoiceTime(iso) {
+            if (!iso) return '';
+            try {
+                var d = new Date(iso);
+                var mins = d.getMinutes();
+                return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + (mins < 10 ? '0' : '') + mins;
+            } catch (e) {
+                return '';
+            }
+        }
+        
+        async function addLetterVoiceMessage(letterId, source, fileName) {
+            if (!canAddLetterVoice() || viewingLetterId !== letterId) {
+                showToast('无法向该信件添加语音');
+                return;
+            }
+            showToast('正在添加语音...');
+            var file;
+            if (source instanceof File) {
+                file = source;
+            } else {
+                file = new File([source], fileName || 'letter-voice.webm', { type: source.type || 'audio/webm' });
+            }
+            var result = await uploadFileToCloud(file, 'letter-voices');
+            if (!result) {
+                showToast('语音添加失败');
+                return;
+            }
+            var voices = getLetterVoices(letterId);
+            var voiceEntry = {
+                id: Date.now().toString(),
+                data: result.url,
+                key: result.key,
+                author: currentUser.username,
+                authorRole: currentUser.role,
+                timestamp: new Date().toISOString(),
+                name: file instanceof File ? file.name : '录制语音'
+            };
+            voices.unshift(voiceEntry);
+            setLetterVoices(letterId, voices);
+            renderLetterDetailVoices(letterId);
+            await syncAllDataToCloud();
+            showToast(source instanceof File ? '录音已插入信件' : '语音已添加到信件');
+        }
+        
+        async function deleteLetterVoice(letterId, voiceId) {
+            var voices = getLetterVoices(letterId);
+            var voice = voices.find(function(v) { return v.id === voiceId; });
+            if (!voice) return;
+            if (!canDeleteLetterVoice(voice)) {
+                showToast('只能删除自己添加的语音（龚建东可管理全部）');
+                return;
+            }
+            if (!confirm('确定删除这条语音吗？')) return;
+            if (voice.key) await deleteFileFromCloud(voice.key);
+            voices = voices.filter(function(v) { return v.id !== voiceId; });
+            setLetterVoices(letterId, voices);
+            renderLetterDetailVoices(letterId);
+            await syncAllDataToCloud();
+            showToast('语音已删除');
+        }
+        
+        function toggleLetterVoiceRecording() {
+            if (!canAddLetterVoice()) {
+                showToast(currentUser && currentUser.role === 'admin' ? '管理员不参与信件语音' : '无法向该信件添加语音');
+                return;
+            }
+            var btn = document.getElementById('letter-voice-record-btn');
+            if (!isLetterVoiceRecording) {
+                voiceRecordingTarget = viewingLetterId;
+                startLetterVoiceRecording();
+                isLetterVoiceRecording = true;
+                if (btn) {
+                    btn.classList.add('recording');
+                    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+                }
+            } else {
+                stopLetterVoiceRecording();
+                isLetterVoiceRecording = false;
+                if (btn) {
+                    btn.classList.remove('recording');
+                    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3S13.66 8 12 8 9 9.34 9 11s1.34 3 3 3zm5.66-1.34l-1.75-1.75c-.78-.78-2.05-.78-2.83 0L7 15.95c-.78.78-.78 2.05 0 2.83l1.75 1.75c.78.78 2.05.78 2.83 0l6.66-6.66c.79-.78.79-2.04 0-2.83z"/></svg>';
+                }
+            }
+        }
+        
+        function startLetterVoiceRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showToast('您的浏览器不支持录音');
+                isLetterVoiceRecording = false;
+                voiceRecordingTarget = null;
+                return;
+            }
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    letterVoiceStream = stream;
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = function(e) {
+                        if (e.data.size > 0) audioChunks.push(e.data);
+                    };
+                    mediaRecorder.onstop = function() {
+                        var targetId = voiceRecordingTarget;
+                        if (audioChunks.length > 0 && targetId) {
+                            var blob = new Blob(audioChunks, { type: 'audio/webm' });
+                            addLetterVoiceMessage(targetId, blob, 'letter-recording.webm');
+                        }
+                        if (letterVoiceStream) {
+                            letterVoiceStream.getTracks().forEach(function(t) { t.stop(); });
+                            letterVoiceStream = null;
+                        }
+                        voiceRecordingTarget = null;
+                    };
+                    mediaRecorder.start();
+                    showToast('开始为信件录音...');
+                })
+                .catch(function() {
+                    showToast('无法访问麦克风');
+                    isLetterVoiceRecording = false;
+                    voiceRecordingTarget = null;
+                });
+        }
+        
+        var letterVoiceStream = null;
+        
+        function stopLetterVoiceRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                showToast('录音已保存到信件');
+            }
+        }
+        
+        async function handleLetterInsertVoiceUpload(event) {
+            if (!canAddLetterVoice()) {
+                showToast('无法向该信件插入录音');
+                return;
+            }
+            var file = event.target.files[0];
+            event.target.value = '';
+            if (!file) return;
+            if (!file.type.startsWith('audio/') && !/\.(mp3|wav|m4a|aac|ogg|webm|flac)$/i.test(file.name)) {
+                showToast('请选择音频文件');
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('文件不能超过 10MB');
+                return;
+            }
+            await addLetterVoiceMessage(viewingLetterId, file, file.name);
+        }
+        
+        function openEditLetterModalFromDetail() {
+            closeLetterDetailModal();
+            if (viewingLetterId) {
+                openEditLetterModal(viewingLetterId);
+            }
         }
         
         function saveLetter() {
@@ -3415,6 +5335,7 @@
                 return;
             }
             
+            var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
             var letter = {
                 id: editingLetterId || Date.now().toString(),
                 title: title,
@@ -3422,13 +5343,62 @@
                 privacy: privacyLevel,
                 date: new Date().toISOString().split('T')[0],
                 likes: 0,
-                favorites: 0
+                favorites: 0,
+                voices: []
             };
             
             closeLetterModal();
-            showToast('信件已保存');
             
-            addLetterCard(letter);
+            if (editingLetterId === 'default') {
+                document.getElementById('letter-content').textContent = content;
+                saveLetterContent(content);
+                
+                var defaultCard = document.querySelector('.letter-card[data-id="default"]');
+                if (defaultCard) {
+                    defaultCard.querySelector('h3').textContent = title;
+                    defaultCard.querySelector('.letter-preview').textContent = content.substring(0, 50) + '...';
+                }
+                
+                showToast('信件已更新');
+                syncAllDataToCloud();
+            } else if (editingLetterId) {
+                var existIdx = letters.findIndex(function(l) { return l.id === editingLetterId; });
+                if (existIdx >= 0) {
+                    letter.voices = letters[existIdx].voices || [];
+                    letters[existIdx] = letter;
+                }
+                saveToStorage(STORAGE_KEYS.LETTERS, letters);
+                updateLetterCard(letter);
+                showToast('信件已更新');
+                syncAllDataToCloud();
+            } else {
+                letters.push(letter);
+                saveToStorage(STORAGE_KEYS.LETTERS, letters);
+                addLetterCard(letter);
+                showToast('信件已保存');
+                syncAllDataToCloud();
+            }
+        }
+        
+        function updateLetterCard(letter) {
+            var card = document.querySelector(`.letter-card[data-id="${letter.id}"]`);
+            if (card) {
+                card.onclick = function() { openLetterDetailModal(letter.id); };
+                card.innerHTML = `
+                    <div class="letter-card-header">
+                        <h3>${letter.title}</h3>
+                        <span class="letter-privacy ${getPrivacyClass(letter.privacy)}">${getPrivacyText(letter.privacy)}</span>
+                    </div>
+                    <p class="letter-preview">${letter.content.substring(0, 50)}...</p>
+                    <div class="letter-card-footer">
+                        <span class="letter-date">${letter.date}</span>
+                        <div class="letter-actions">
+                            <button class="letter-action-btn" onclick="event.stopPropagation(); openEditLetterModal('${letter.id}')">编辑</button>
+                            <button class="letter-action-btn" onclick="event.stopPropagation(); deleteLetter('${letter.id}')">删除</button>
+                        </div>
+                    </div>
+                `;
+            }
         }
         
         function addLetterCard(letter) {
@@ -3437,30 +5407,71 @@
             card.className = 'letter-card';
             card.dataset.id = letter.id;
             
-            card.innerHTML = `
-                <div class="letter-card-header">
-                    <h3>${letter.title}</h3>
-                    <span class="letter-privacy ${getPrivacyClass(letter.privacy)}">${getPrivacyText(letter.privacy)}</span>
-                </div>
-                <p class="letter-preview">${letter.content.substring(0, 50)}...</p>
-                <div class="letter-card-footer">
-                    <span class="letter-date">${letter.date}</span>
-                    <div class="letter-actions">
-                        <button class="letter-action-btn" onclick="openEditLetterModal('${letter.id}')">编辑</button>
-                        <button class="letter-action-btn" onclick="deleteLetter('${letter.id}')">删除</button>
+            var userVipLevel = currentUser ? (currentUser.vipLevel || 0) : 0;
+            var canAccess = letter.privacy <= userVipLevel || currentUser.role === 'editor';
+            
+            if (canAccess) {
+                card.onclick = function() { openLetterDetailModal(letter.id); };
+                card.innerHTML = `
+                    <div class="letter-card-header">
+                        <h3>${letter.title}</h3>
+                        <span class="letter-privacy ${getPrivacyClass(letter.privacy)}">${getPrivacyText(letter.privacy)}</span>
                     </div>
-                </div>
-            `;
+                    <p class="letter-preview">${letter.content.substring(0, 50)}...</p>
+                    <div class="letter-card-footer">
+                        <span class="letter-date">${letter.date}</span>
+                        <div class="letter-actions">
+                            <button class="letter-action-btn" onclick="event.stopPropagation(); openEditLetterModal('${letter.id}')">编辑</button>
+                            <button class="letter-action-btn" onclick="event.stopPropagation(); deleteLetter('${letter.id}')">删除</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                card.innerHTML = `
+                    <div class="letter-card-header">
+                        <h3>${letter.title}</h3>
+                        <span class="letter-privacy ${getPrivacyClass(letter.privacy)}">${getPrivacyText(letter.privacy)}</span>
+                    </div>
+                    <div class="letter-locked">
+                        <div class="lock-icon">🔒</div>
+                        <p class="locked-text">会员专属内容</p>
+                    </div>
+                    <div class="letter-card-footer">
+                        <span class="letter-date">${letter.date}</span>
+                    </div>
+                `;
+            }
             
             container.appendChild(card);
+        }
+        
+        function loadLettersFromStorage() {
+            var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
+            letters.forEach(function(letter) {
+                if (!document.querySelector('.letter-card[data-id="' + letter.id + '"]')) {
+                    addLetterCard(letter);
+                }
+            });
         }
         
         function deleteLetter(letterId) {
             if (!confirm('确定要删除这封信件吗？')) return;
             
-            var card = document.querySelector(`.letter-card[data-id="${letterId}"]`);
-            if (card) {
-                card.remove();
+            if (letterId === 'default') {
+                document.getElementById('letter-content').textContent = '亲爱的你，\n\n分开的这些日子里，我每天都在想你...';
+                saveLetterContent(document.getElementById('letter-content').textContent);
+                showToast('信件已重置为默认内容');
+            } else {
+                var cards = document.querySelectorAll(`.letter-card[data-id="${letterId}"]`);
+                cards.forEach(function(card) {
+                    card.remove();
+                });
+                
+                var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
+                letters = letters.filter(function(l) { return l.id !== letterId; });
+                saveToStorage(STORAGE_KEYS.LETTERS, letters);
+                syncAllDataToCloud();
+                
                 showToast('信件已删除');
             }
         }
@@ -3521,11 +5532,24 @@
             element.classList.toggle('favorited');
         }
         
+        var batchUploadFiles = null;
+
         function showBatchPrivacyModal(event) {
-            var files = event.target.files;
-            if (!files || files.length === 0) return;
+            batchUploadFiles = event.target.files;
+            if (!batchUploadFiles || batchUploadFiles.length === 0) return;
             
-            var privacyRadios = document.querySelectorAll('input[name="privacy"]');
+            document.getElementById('batch-privacy-modal').style.display = 'flex';
+        }
+        
+        function closeBatchPrivacyModal() {
+            document.getElementById('batch-privacy-modal').style.display = 'none';
+            batchUploadFiles = null;
+        }
+        
+        function confirmBatchUpload() {
+            if (!batchUploadFiles || batchUploadFiles.length === 0) return;
+            
+            var privacyRadios = document.querySelectorAll('input[name="batch-privacy"]');
             var privacyLevel = 0;
             privacyRadios.forEach(function(radio) {
                 if (radio.checked) {
@@ -3533,7 +5557,8 @@
                 }
             });
             
-            handleBatchUploadWithPrivacy(files, privacyLevel);
+            handleBatchUploadWithPrivacy(batchUploadFiles, privacyLevel);
+            closeBatchPrivacyModal();
         }
         
         async function handleBatchUploadWithPrivacy(files, privacyLevel) {
@@ -3563,10 +5588,11 @@
                             src: result.url,
                             key: result.key,
                             name: file.name,
-                            privacy: privacyLevel
+                            privacy: privacyLevel,
+                            author: currentUser.username
                         };
                         await saveMediaToDB(mediaItem);
-                        addMediaToGallery(result.url, type, file.name, mediaItem.id, privacyLevel);
+                        addMediaToGallery(result.url, type, file.name, mediaItem.id, privacyLevel, currentUser.username);
                         successCount++;
                     } else {
                         failCount++;
@@ -3579,21 +5605,229 @@
             
             syncAllDataToCloud();
             
-            var privacyText = privacyLevel === 0 ? '公开' : privacyLevel === 1 ? '会员可见' : '超级会员可见';
-            var message = '批量上传完成：成功 ' + successCount + ' 个，失败 ' + failCount + ' 个，权限: ' + privacyText;
+            var message = '批量上传完成：成功 ' + successCount + ' 个，失败 ' + failCount + ' 个，权限: ' + formatPrivacyHint(privacyLevel);
             showToast(message);
         }
         
-        function canAccessMedia(privacyLevel) {
+        function loadFriendsData() {
+            return loadFromStorage(STORAGE_KEYS.FRIENDS, { list: {}, requests: [] });
+        }
+        
+        function saveFriendsData(data) {
+            saveToStorage(STORAGE_KEYS.FRIENDS, data);
+            saveUsersToCloud();
+        }
+        
+        function isFriend(userA, userB) {
+            if (!userA || !userB || userA === userB) return false;
+            var data = loadFriendsData();
+            return data.list[userA] && data.list[userA].indexOf(userB) !== -1;
+        }
+        
+        function getIncomingFriendRequests() {
+            if (!currentUser) return [];
+            return loadFriendsData().requests.filter(function(r) {
+                return r.to === currentUser.username;
+            });
+        }
+        
+        function updateFriendRequestBadge() {
+            var count = currentUser ? getIncomingFriendRequests().length : 0;
+            var badge = document.getElementById('friend-request-badge');
+            var tabBadge = document.getElementById('friend-tab-badge');
+            if (badge) {
+                badge.textContent = count;
+                badge.classList.toggle('show', count > 0);
+            }
+            if (tabBadge) {
+                tabBadge.textContent = count;
+                tabBadge.style.display = count > 0 ? 'inline-flex' : 'none';
+            }
+        }
+        
+        function openFriendsModal() {
+            if (!currentUser || currentUser.role === 'admin') return;
+            document.getElementById('friends-modal').classList.add('show');
+            switchFriendsTab('list', document.querySelector('.friends-tab[data-panel="list"]'));
+            renderFriendsPanels();
+        }
+        
+        function closeFriendsModal() {
+            document.getElementById('friends-modal').classList.remove('show');
+        }
+        
+        function switchFriendsTab(panel, btn) {
+            document.querySelectorAll('.friends-tab').forEach(function(t) {
+                t.classList.remove('active');
+            });
+            if (btn) btn.classList.add('active');
+            document.querySelectorAll('.friends-panel').forEach(function(p) {
+                p.classList.remove('active');
+            });
+            var el = document.getElementById('friends-panel-' + panel);
+            if (el) el.classList.add('active');
+            if (panel !== 'add') renderFriendsPanels();
+        }
+        
+        function renderFriendsPanels() {
+            if (!currentUser) return;
+            var data = loadFriendsData();
+            var listEl = document.getElementById('friends-panel-list');
+            var reqEl = document.getElementById('friends-panel-requests');
+            var myFriends = data.list[currentUser.username] || [];
+            
+            if (myFriends.length === 0) {
+                listEl.innerHTML = '<div class="friends-empty">还没有好友，去「添加好友」发申请吧</div>';
+            } else {
+                listEl.innerHTML = myFriends.map(function(name) {
+                    return '<div class="friends-list-item">' +
+                        getUserAvatarHtml(name, 'md') +
+                        '<div><div class="friend-name">' + name + '</div>' +
+                        '<div class="friend-role-tag">' + getRoleDisplayName(getUserRole(name)) + '</div></div>' +
+                        '<button type="button" class="friend-action-btn remove" onclick="removeFriend(\'' + name + '\')">删除</button></div>';
+                }).join('');
+            }
+            
+            var incoming = getIncomingFriendRequests();
+            var outgoing = data.requests.filter(function(r) { return r.from === currentUser.username; });
+            
+            var html = '';
+            if (incoming.length) {
+                html += '<p style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin:0 0 10px;">收到的申请</p>';
+                html += incoming.map(function(r) {
+                    return '<div class="friends-list-item">' + getUserAvatarHtml(r.from, 'md') +
+                        '<div><div class="friend-name">' + r.from + '</div><div class="friend-role-tag">请求加为好友</div></div>' +
+                        '<button type="button" class="friend-action-btn accept" onclick="acceptFriendRequest(\'' + r.id + '\')">同意</button>' +
+                        '<button type="button" class="friend-action-btn reject" onclick="rejectFriendRequest(\'' + r.id + '\')">拒绝</button></div>';
+                }).join('');
+            }
+            if (outgoing.length) {
+                html += '<p style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin:16px 0 10px;">已发送</p>';
+                html += outgoing.map(function(r) {
+                    return '<div class="friends-list-item">' + getUserAvatarHtml(r.to, 'md') +
+                        '<div><div class="friend-name">' + r.to + '</div><div class="friend-role-tag">等待对方同意</div></div></div>';
+                }).join('');
+            }
+            if (!html) {
+                html = '<div class="friends-empty">暂无好友申请</div>';
+            }
+            reqEl.innerHTML = html;
+            updateFriendRequestBadge();
+        }
+        
+        function sendFriendRequest() {
+            if (!currentUser) return;
+            var toName = document.getElementById('friend-add-username').value.trim();
+            document.getElementById('friend-add-username').value = '';
+            if (!/^[\u4e00-\u9fa5]{1,4}$/.test(toName)) {
+                showToast('请输入正确的中文用户名');
+                return;
+            }
+            if (toName === currentUser.username) {
+                showToast('不能添加自己');
+                return;
+            }
+            if (!USERS[toName]) {
+                showToast('用户不存在');
+                return;
+            }
+            if (USERS[toName].role === 'admin') {
+                showToast('无法添加管理员为好友');
+                return;
+            }
+            if (isFriend(currentUser.username, toName)) {
+                showToast('你们已经是好友了');
+                return;
+            }
+            var data = loadFriendsData();
+            var exists = data.requests.some(function(r) {
+                return (r.from === currentUser.username && r.to === toName) ||
+                    (r.from === toName && r.to === currentUser.username);
+            });
+            if (exists) {
+                showToast('已有待处理的申请');
+                return;
+            }
+            data.requests.push({
+                id: Date.now().toString(),
+                from: currentUser.username,
+                to: toName,
+                createdAt: new Date().toISOString()
+            });
+            saveFriendsData(data);
+            renderFriendsPanels();
+            switchFriendsTab('requests', document.querySelector('.friends-tab[data-panel="requests"]'));
+            showToast('好友申请已发送');
+        }
+        
+        function acceptFriendRequest(requestId) {
+            var data = loadFriendsData();
+            var idx = data.requests.findIndex(function(r) { return r.id === requestId; });
+            if (idx === -1) return;
+            var req = data.requests[idx];
+            if (req.to !== currentUser.username) {
+                showToast('无权处理该申请');
+                return;
+            }
+            if (!data.list[req.from]) data.list[req.from] = [];
+            if (!data.list[req.to]) data.list[req.to] = [];
+            if (data.list[req.from].indexOf(req.to) === -1) data.list[req.from].push(req.to);
+            if (data.list[req.to].indexOf(req.from) === -1) data.list[req.to].push(req.from);
+            data.requests.splice(idx, 1);
+            saveFriendsData(data);
+            renderFriendsPanels();
+            loadMediaGallery();
+            loadVoiceMessagesUI();
+            showToast('已添加好友：' + req.from);
+        }
+        
+        function rejectFriendRequest(requestId) {
+            var data = loadFriendsData();
+            var idx = data.requests.findIndex(function(r) { return r.id === requestId; });
+            if (idx === -1) return;
+            var req = data.requests[idx];
+            if (req.to !== currentUser.username && req.from !== currentUser.username) {
+                showToast('无权处理');
+                return;
+            }
+            data.requests.splice(idx, 1);
+            saveFriendsData(data);
+            renderFriendsPanels();
+            showToast('已拒绝申请');
+        }
+        
+        function removeFriend(friendName) {
+            if (!confirm('确定删除好友「' + friendName + '」吗？')) return;
+            var data = loadFriendsData();
+            [currentUser.username, friendName].forEach(function(u) {
+                if (data.list[u]) {
+                    data.list[u] = data.list[u].filter(function(n) { return n !== friendName && n !== currentUser.username; });
+                }
+            });
+            saveFriendsData(data);
+            renderFriendsPanels();
+            loadMediaGallery();
+            showToast('已删除好友');
+        }
+        
+        function canAccessMedia(privacyLevel, authorUsername) {
             if (!currentUser) return false;
+            if (currentUser.role === 'editor') return true;
+            var level = privacyLevel || 0;
+            if (level === 0) return true;
+            if (level === 3) {
+                if (!authorUsername) return false;
+                return currentUser.username === authorUsername || isFriend(currentUser.username, authorUsername);
+            }
             var userVipLevel = currentUser.vipLevel || 0;
-            return userVipLevel >= privacyLevel;
+            return userVipLevel >= level;
         }
         
         function getPrivacyClass(privacyLevel) {
             switch (privacyLevel) {
                 case 1: return 'vip';
                 case 2: return 'super-vip';
+                case 3: return 'friends';
                 default: return 'public';
             }
         }
@@ -3602,6 +5836,16 @@
             switch (privacyLevel) {
                 case 1: return '⭐ 会员';
                 case 2: return '⭐⭐ 超会';
+                case 3: return '👥 好友';
+                default: return '公开';
+            }
+        }
+        
+        function formatPrivacyHint(privacyLevel) {
+            switch (privacyLevel) {
+                case 1: return '会员可见';
+                case 2: return '超级会员可见';
+                case 3: return '仅好友可见';
                 default: return '公开';
             }
         }
@@ -3642,7 +5886,8 @@
                     username: username,
                     role: USERS[username].role,
                     permissions: USERS[username].permissions || { view: true, edit: false, upload: false, visitor: false, backup: false },
-                    vipLevel: USERS[username].vipLevel || 0
+                    vipLevel: USERS[username].vipLevel || 0,
+                    avatar: USERS[username].avatar || ''
                 };
                 saveToStorage(STORAGE_KEYS.LOGGED_USER, currentUser);
                 
@@ -3650,8 +5895,11 @@
                     document.getElementById('login-container').style.display = 'none';
                     document.getElementById('main-container').style.display = 'none';
                     document.getElementById('admin-container').style.display = 'flex';
-                    loadPendingUsers();
-                    loadUsers();
+                    loadUsersFromCloud().then(function() {
+                        loadPendingUsers();
+                        loadUsers();
+                        updatePendingBadge();
+                    });
                     showToast('欢迎青泥管理员');
                     return;
                 }
@@ -3659,7 +5907,7 @@
                 document.getElementById('login-container').style.display = 'none';
                 document.getElementById('main-container').style.display = 'block';
                 
-                document.getElementById('user-name').textContent = username;
+                updateCurrentUserHeader();
                 var roleSpan = document.getElementById('user-role');
                 var roleText = '';
                 if (currentUser.role === 'editor') {
@@ -3677,6 +5925,9 @@
                 }
                 
                 applyPermissions();
+                loadUsersFromCloud().then(function() {
+                    updateFriendRequestBadge();
+                });
                 loadSavedData();
                 startAutoSync();
                 showToast('欢迎回来，' + username);
@@ -3707,8 +5958,11 @@
             var uploadImageLabel = document.getElementById('upload-image-label');
             var uploadVideoLabel = document.getElementById('upload-video-label');
             var recordBtn = document.getElementById('record-btn');
+            var insertVoiceLabel = document.getElementById('insert-voice-label');
             var musicChangeBtn = document.getElementById('music-change-btn');
             var deleteButtons = document.querySelectorAll('.delete-media');
+            var defaultLetterActions = document.getElementById('default-letter-actions');
+            var addLetterBtn = document.getElementById('add-letter-btn');
             
             if (currentUser.role === 'viewer') {
                 editBtns.forEach(function(btn) {
@@ -3722,11 +5976,21 @@
                     recordBtn.style.opacity = '0.5';
                     recordBtn.style.cursor = 'not-allowed';
                 }
+                if (insertVoiceLabel) {
+                    insertVoiceLabel.style.opacity = '0.5';
+                    insertVoiceLabel.style.pointerEvents = 'none';
+                    insertVoiceLabel.style.cursor = 'not-allowed';
+                }
                 if (musicChangeBtn) musicChangeBtn.style.display = 'none';
+                var friendsBtn = document.getElementById('friends-btn');
+                if (friendsBtn) friendsBtn.style.display = 'inline';
                 
                 deleteButtons.forEach(function(btn) {
                     btn.style.display = 'none';
                 });
+                
+                if (defaultLetterActions) defaultLetterActions.style.display = 'none';
+                if (addLetterBtn) addLetterBtn.style.display = 'none';
                 
             } else {
                 editBtns.forEach(function(btn) {
@@ -3740,12 +6004,23 @@
                     recordBtn.style.opacity = '1';
                     recordBtn.style.cursor = 'pointer';
                 }
+                if (insertVoiceLabel) {
+                    insertVoiceLabel.style.opacity = '1';
+                    insertVoiceLabel.style.pointerEvents = 'auto';
+                    insertVoiceLabel.style.cursor = 'pointer';
+                }
                 if (musicChangeBtn) musicChangeBtn.style.display = 'flex';
                 
                 deleteButtons.forEach(function(btn) {
                     btn.style.display = 'flex';
                 });
+                
+                if (defaultLetterActions) defaultLetterActions.style.display = 'flex';
+                if (addLetterBtn) addLetterBtn.style.display = 'inline-flex';
+                var friendsBtnEd = document.getElementById('friends-btn');
+                if (friendsBtnEd) friendsBtnEd.style.display = 'inline';
             }
+            updateFriendRequestBadge();
         }
         
         function logout() {
@@ -3779,32 +6054,194 @@
             showToast('已退出管理系统');
         }
         
+        var adminUserFilter = 'all';
+        
         function showAdminTab(tabName) {
-            var tabs = document.querySelectorAll('.admin-nav-item');
-            tabs.forEach(function(tab) {
-                tab.classList.remove('active');
+            document.querySelectorAll('.admin-nav-item').forEach(function(tab) {
+                tab.classList.toggle('active', tab.getAttribute('data-tab') === tabName);
             });
-            
-            var currentTab = document.querySelector('.admin-nav-item[onclick="showAdminTab(\'' + tabName + '\')"]');
-            if (currentTab) {
-                currentTab.classList.add('active');
-            }
-            
-            var contents = document.querySelectorAll('.admin-tab-content');
-            contents.forEach(function(content) {
+            document.querySelectorAll('.admin-tab-content').forEach(function(content) {
                 content.style.display = 'none';
             });
-            
             var targetContent = document.getElementById('admin-tab-' + tabName);
-            if (targetContent) {
-                targetContent.style.display = 'block';
+            if (targetContent) targetContent.style.display = 'block';
+            if (tabName === 'pending') loadPendingUsers();
+            else if (tabName === 'users') loadUsers();
+        }
+        
+        function updatePendingBadge() {
+            var pending = loadFromStorage(STORAGE_KEYS.PENDING_USERS, []);
+            var count = pending.length;
+            var badge = document.getElementById('pending-count-badge');
+            var statEl = document.getElementById('stat-pending-count');
+            if (badge) {
+                badge.textContent = count;
+                badge.classList.toggle('hidden', count === 0);
             }
-            
-            if (tabName === 'pending') {
-                loadPendingUsers();
-            } else if (tabName === 'users') {
+            if (statEl) statEl.textContent = count;
+        }
+        
+        var adminAvatarTargetUser = null;
+        
+        function getUserInitial(name) {
+            return (name && name.charAt(0)) ? name.charAt(0) : '?';
+        }
+        
+        function getUserRole(username) {
+            return USERS[username] ? USERS[username].role : 'viewer';
+        }
+        
+        function getUserAvatarUrl(username) {
+            if (!username || !USERS[username]) return '';
+            return USERS[username].avatar || '';
+        }
+        
+        function getUserAvatarHtml(username, size, roleOverride) {
+            size = size || 'md';
+            var role = roleOverride || getRoleBadgeClass(getUserRole(username));
+            var url = getUserAvatarUrl(username);
+            var cls = 'user-avatar user-avatar-' + size + ' role-' + role;
+            if (url) {
+                return '<span class="' + cls + '"><img src="' + url.replace(/"/g, '&quot;') + '" alt=""></span>';
+            }
+            return '<span class="' + cls + '"><span class="user-avatar-initial">' + getUserInitial(username) + '</span></span>';
+        }
+        
+        function setAvatarOnElement(el, username, size, roleOverride) {
+            if (!el) return;
+            el.innerHTML = getUserAvatarHtml(username, size, roleOverride);
+        }
+        
+        function updateCurrentUserHeader() {
+            if (!currentUser) return;
+            setAvatarOnElement(document.getElementById('header-user-avatar'), currentUser.username, 'xl', getRoleBadgeClass(currentUser.role));
+            var nameEl = document.getElementById('user-name');
+            if (nameEl) nameEl.textContent = currentUser.username;
+        }
+        
+        function compressAvatarFile(file, callback) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var size = 128;
+                    var w = img.width;
+                    var h = img.height;
+                    if (w > h) {
+                        h = (h * size) / w;
+                        w = size;
+                    } else {
+                        w = (w * size) / h;
+                        h = size;
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    callback(canvas.toDataURL('image/jpeg', 0.82));
+                };
+                img.onerror = function() { callback(null); };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function saveUserAvatar(username, dataUrl) {
+            if (!USERS[username]) return false;
+            USERS[username].avatar = dataUrl || '';
+            if (currentUser && currentUser.username === username) {
+                currentUser.avatar = dataUrl || '';
+                saveToStorage(STORAGE_KEYS.LOGGED_USER, currentUser);
+                updateCurrentUserHeader();
+            }
+            saveUsersToCloud();
+            return true;
+        }
+        
+        function handleAvatarUpload(event) {
+            if (!currentUser) return;
+            var file = event.target.files[0];
+            event.target.value = '';
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showToast('请选择图片作为头像');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('图片不能超过 5MB');
+                return;
+            }
+            showToast('正在处理头像...');
+            compressAvatarFile(file, function(dataUrl) {
+                if (!dataUrl) {
+                    showToast('头像处理失败');
+                    return;
+                }
+                saveUserAvatar(currentUser.username, dataUrl);
                 loadUsers();
+                showToast('✓ 头像已更新');
+            });
+        }
+        
+        function promptAdminAvatarUpload(username) {
+            adminAvatarTargetUser = username;
+            document.getElementById('admin-avatar-upload').click();
+        }
+        
+        function handleAdminAvatarUpload(event) {
+            var username = adminAvatarTargetUser;
+            adminAvatarTargetUser = null;
+            var file = event.target.files[0];
+            event.target.value = '';
+            if (!file || !username) return;
+            if (!file.type.startsWith('image/')) {
+                showToast('请选择图片');
+                return;
             }
+            compressAvatarFile(file, function(dataUrl) {
+                if (!dataUrl) {
+                    showToast('头像处理失败');
+                    return;
+                }
+                saveUserAvatar(username, dataUrl);
+                loadUsers();
+                loadPendingUsers();
+                showToast('✓ 已更新 ' + username + ' 的头像');
+            });
+        }
+        
+        function getRoleBadgeClass(role) {
+            if (role === 'editor') return 'editor';
+            if (role === 'admin') return 'admin';
+            return 'viewer';
+        }
+        
+        function getRoleDisplayName(role) {
+            if (role === 'editor') return '编辑者';
+            if (role === 'admin') return '管理员';
+            return '查看者';
+        }
+        
+        function setAdminUserFilter(filter, btn) {
+            adminUserFilter = filter;
+            document.querySelectorAll('.admin-filter-btn').forEach(function(b) {
+                b.classList.toggle('active', b === btn);
+            });
+            filterAdminUsers();
+        }
+        
+        function filterAdminUsers() {
+            loadUsers();
+        }
+        
+        function buildPermToggle(username, key, label, desc, checked, disabled) {
+            var dis = disabled ? ' disabled' : '';
+            var chk = checked ? ' checked' : '';
+            return '<div class="perm-toggle-row">' +
+                '<span class="perm-toggle-label">' + label + '<small>' + desc + '</small></span>' +
+                '<input type="checkbox" class="permission-checkbox"' + chk + dis +
+                ' onchange="updatePermission(\'' + username + '\', \'' + key + '\', this.checked)">' +
+                '</div>';
         }
         
         function resetAddUserForm() {
@@ -3837,20 +6274,56 @@
             document.getElementById('current-weekday').textContent = weekday;
         }
         
+        var currentLocation = { lat: 31.2304, lon: 121.4737, name: '上海' };
+        
         async function loadWeather() {
             if ('geolocation' in navigator) {
                 navigator.geolocation.getCurrentPosition(async function(position) {
                     var lat = position.coords.latitude;
                     var lon = position.coords.longitude;
+                    currentLocation.lat = lat;
+                    currentLocation.lon = lon;
                     await fetchWeather(lat, lon);
-                }, function(error) {
+                }, async function(error) {
                     console.error('获取位置失败:', error);
-                    document.getElementById('weather-location').textContent = '无法获取位置';
-                    document.getElementById('weather-text').textContent = '天气信息加载失败';
+                    showToast('无法获取位置，使用默认位置');
+                    await fetchWeather(currentLocation.lat, currentLocation.lon);
+                    document.getElementById('weather-location').textContent = currentLocation.name;
                 });
             } else {
-                document.getElementById('weather-location').textContent = '浏览器不支持定位';
-                document.getElementById('weather-text').textContent = '天气信息加载失败';
+                showToast('浏览器不支持定位，使用默认位置');
+                await fetchWeather(currentLocation.lat, currentLocation.lon);
+                document.getElementById('weather-location').textContent = currentLocation.name;
+            }
+        }
+        
+        function openLocationSelector() {
+            var locations = [
+                { name: '北京', lat: 39.9042, lon: 116.4074 },
+                { name: '上海', lat: 31.2304, lon: 121.4737 },
+                { name: '广州', lat: 23.1291, lon: 113.2644 },
+                { name: '深圳', lat: 22.5431, lon: 114.0579 },
+                { name: '杭州', lat: 30.2741, lon: 120.1552 },
+                { name: '成都', lat: 30.5728, lon: 104.0668 },
+                { name: '武汉', lat: 30.5928, lon: 114.3055 },
+                { name: '南京', lat: 32.0603, lon: 118.7969 }
+            ];
+            
+            var locationStr = locations.map(function(l, i) {
+                return (i + 1) + '. ' + l.name;
+            }).join('\n');
+            
+            var choice = prompt('请选择城市（输入数字）：\n' + locationStr);
+            var index = parseInt(choice) - 1;
+            
+            if (index >= 0 && index < locations.length) {
+                var loc = locations[index];
+                currentLocation = loc;
+                fetchWeather(loc.lat, loc.lon);
+                document.getElementById('weather-location').textContent = loc.name;
+                showToast('已切换到 ' + loc.name);
+            } else {
+                showToast('输入无效');
             }
         }
         
@@ -4001,9 +6474,10 @@
         function loadPendingUsers() {
             var pendingUsers = loadFromStorage(STORAGE_KEYS.PENDING_USERS, []);
             var pendingList = document.getElementById('pending-list');
+            updatePendingBadge();
             
             if (pendingUsers.length === 0) {
-                pendingList.innerHTML = '<div class="no-pending">暂无待审核的注册申请</div>';
+                pendingList.innerHTML = '<div class="no-pending"><div class="no-pending-icon">📭</div><div>暂无待审核的注册申请</div><div style="margin-top:8px;font-size:0.8rem;">新用户在前台注册后会显示在这里</div></div>';
                 return;
             }
             
@@ -4012,25 +6486,22 @@
             });
             
             pendingList.innerHTML = pendingUsers.map(function(user) {
-                return `
-                    <div class="pending-item">
-                        <div class="pending-info">
-                            <div class="pending-username">👤 ${user.username}</div>
-                            <div class="pending-time">提交时间: ${user.submitTime}</div>
-                            <div class="pending-role">
-                                <label>分配角色:</label>
-                                <select class="role-selector" id="role-${user.id}">
-                                    <option value="viewer">查看者</option>
-                                    <option value="editor">编辑者</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="pending-actions">
-                            <button class="action-btn approve" onclick="approveUser('${user.id}')">通过</button>
-                            <button class="action-btn reject" onclick="rejectUser('${user.id}')">拒绝</button>
-                        </div>
-                    </div>
-                `;
+                return '<div class="pending-item">' +
+                    '<div class="pending-info">' +
+                    '<div class="pending-username">' +
+                    getUserAvatarHtml(user.username, 'md') +
+                    '<span>' + user.username + '</span></div>' +
+                    '<div class="pending-meta">' +
+                    '<span class="pending-chip">🕐 ' + (user.submitTime || '未知时间') + '</span>' +
+                    '<span class="pending-chip">自助注册</span></div>' +
+                    '<div class="pending-role"><label>审核通过为</label>' +
+                    '<select class="role-selector admin-select" id="role-' + user.id + '" style="width:auto;min-width:120px;">' +
+                    '<option value="viewer">查看者</option>' +
+                    '<option value="editor">编辑者</option></select></div></div>' +
+                    '<div class="pending-actions">' +
+                    '<button type="button" class="action-btn approve" onclick="approveUser(\'' + user.id + '\')">✓ 通过</button>' +
+                    '<button type="button" class="action-btn reject" onclick="rejectUser(\'' + user.id + '\')">✕ 拒绝</button>' +
+                    '</div></div>';
             }).join('');
         }
         
@@ -4048,7 +6519,16 @@
             
             USERS[user.username] = {
                 password: user.password,
-                role: role
+                role: role,
+                permissions: {
+                    view: true,
+                    edit: role === 'editor',
+                    upload: role === 'editor',
+                    visitor: role === 'editor',
+                    backup: role === 'editor'
+                },
+                vipLevel: 0,
+                avatar: ''
             };
             
             pendingUsers.splice(userIndex, 1);
@@ -4079,59 +6559,91 @@
         }
         
         function loadUsers() {
-            var tableBody = document.getElementById('permissions-table-body');
+            var grid = document.getElementById('users-grid');
+            if (!grid) return;
+            
+            var searchEl = document.getElementById('admin-user-search');
+            var query = searchEl ? searchEl.value.trim().toLowerCase() : '';
+            
             var usersArray = Object.keys(USERS).map(function(username) {
-                return {
-                    username: username,
-                    ...USERS[username]
-                };
+                return { username: username, role: USERS[username].role, permissions: USERS[username].permissions, vipLevel: USERS[username].vipLevel };
             });
             
-            if (usersArray.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: rgba(255,255,255,0.4);">暂无用户</td></tr>';
+            var editors = usersArray.filter(function(u) { return u.role === 'editor'; }).length;
+            var viewers = usersArray.filter(function(u) { return u.role === 'viewer'; }).length;
+            var system = usersArray.filter(function(u) { return u.role === 'admin' || u.username === '龚建东'; }).length;
+            
+            var statTotal = document.getElementById('stat-total-users');
+            var statEditor = document.getElementById('stat-editor-count');
+            var statViewer = document.getElementById('stat-viewer-count');
+            var statSystem = document.getElementById('stat-system-count');
+            if (statTotal) statTotal.textContent = usersArray.length;
+            if (statEditor) statEditor.textContent = editors;
+            if (statViewer) statViewer.textContent = viewers;
+            if (statSystem) statSystem.textContent = system;
+            
+            var filtered = usersArray.filter(function(user) {
+                if (query && user.username.toLowerCase().indexOf(query) === -1) return false;
+                if (adminUserFilter === 'all') return true;
+                if (adminUserFilter === 'admin') return user.role === 'admin' || user.username === '龚建东';
+                return user.role === adminUserFilter;
+            });
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="users-empty">没有匹配的用户</div>';
                 return;
             }
             
-            tableBody.innerHTML = usersArray.map(function(user) {
+            filtered.sort(function(a, b) {
+                var order = { admin: 0, editor: 1, viewer: 2 };
+                var oa = order[a.role] !== undefined ? order[a.role] : 3;
+                var ob = order[b.role] !== undefined ? order[b.role] : 3;
+                if (oa !== ob) return oa - ob;
+                return a.username.localeCompare(b.username, 'zh');
+            });
+            
+            grid.innerHTML = filtered.map(function(user) {
                 var isProtected = user.username === '龚建东' || user.username === '青泥';
                 var perms = user.permissions || { view: true, edit: false, upload: false, visitor: false, backup: false };
                 var vipLevel = user.vipLevel || 0;
+                var roleClass = getRoleBadgeClass(user.role);
+                var cardClass = 'user-perm-card' + (isProtected ? ' system' : '');
                 
-                return `
-                    <tr>
-                        <td>
-                            ${user.username}
-                            ${isProtected ? '<span class="protected-badge">系统</span>' : ''}
-                        </td>
-                        <td>
-                            <input type="checkbox" class="permission-checkbox" ${perms.view ? 'checked' : ''} ${isProtected && user.username === '龚建东' ? 'disabled' : ''} onchange="updatePermission('${user.username}', 'view', this.checked)">
-                        </td>
-                        <td>
-                            <input type="checkbox" class="permission-checkbox" ${perms.edit ? 'checked' : ''} ${isProtected ? 'disabled' : ''} onchange="updatePermission('${user.username}', 'edit', this.checked)">
-                        </td>
-                        <td>
-                            <input type="checkbox" class="permission-checkbox" ${perms.upload ? 'checked' : ''} ${isProtected ? 'disabled' : ''} onchange="updatePermission('${user.username}', 'upload', this.checked)">
-                        </td>
-                        <td>
-                            <input type="checkbox" class="permission-checkbox" ${perms.visitor ? 'checked' : ''} ${isProtected ? 'disabled' : ''} onchange="updatePermission('${user.username}', 'visitor', this.checked)">
-                        </td>
-                        <td>
-                            <input type="checkbox" class="permission-checkbox" ${perms.backup ? 'checked' : ''} ${isProtected ? 'disabled' : ''} onchange="updatePermission('${user.username}', 'backup', this.checked)">
-                        </td>
-                        <td>
-                            ${!isProtected ? `
-                                <select class="role-selector" onchange="updateVipLevel('${user.username}', this.value)">
-                                    <option value="0" ${vipLevel === 0 ? 'selected' : ''}>普通</option>
-                                    <option value="1" ${vipLevel === 1 ? 'selected' : ''}>⭐ 会员</option>
-                                    <option value="2" ${vipLevel === 2 ? 'selected' : ''}>⭐⭐ 超级会员</option>
-                                </select>
-                            ` : `<span style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">${vipLevel === 2 ? '⭐⭐ 超级会员' : vipLevel === 1 ? '⭐ 会员' : '普通'}</span>`}
-                        </td>
-                        <td>
-                            ${!isProtected ? `<button class="delete-user-btn" onclick="deleteUser('${user.username}')">删除</button>` : '-'}
-                        </td>
-                    </tr>
-                `;
+                var vipBlock;
+                if (!isProtected) {
+                    vipBlock = '<select class="admin-select" onchange="updateVipLevel(\'' + user.username + '\', this.value)">' +
+                        '<option value="0"' + (vipLevel === 0 ? ' selected' : '') + '>普通用户</option>' +
+                        '<option value="1"' + (vipLevel === 1 ? ' selected' : '') + '>⭐ 会员</option>' +
+                        '<option value="2"' + (vipLevel === 2 ? ' selected' : '') + '>⭐⭐ 超级会员</option></select>';
+                } else {
+                    vipBlock = '<span style="color:rgba(255,255,255,0.55);font-size:0.85rem;">' +
+                        (vipLevel === 2 ? '⭐⭐ 超级会员' : vipLevel === 1 ? '⭐ 会员' : '普通') + '</span>';
+                }
+                
+                var footer = !isProtected
+                    ? '<div class="user-perm-footer"><button type="button" class="admin-avatar-btn" onclick="promptAdminAvatarUpload(\'' + user.username + '\')">设置头像</button><button type="button" class="delete-user-btn" onclick="deleteUser(\'' + user.username + '\')">删除账户</button></div>'
+                    : '<div class="user-perm-footer"><button type="button" class="admin-avatar-btn" onclick="promptAdminAvatarUpload(\'' + user.username + '\')">设置头像</button></div>';
+                
+                var viewDisabled = isProtected && user.username === '龚建东';
+                
+                return '<div class="' + cardClass + '" data-username="' + user.username + '" data-role="' + user.role + '">' +
+                    '<div class="user-perm-card-header">' +
+                    getUserAvatarHtml(user.username, 'lg', roleClass) +
+                    '<div><div class="user-perm-name">' + user.username +
+                    (isProtected ? '<span class="protected-badge">系统</span>' : '') + '</div>' +
+                    '<div class="user-perm-badges"><span class="role-badge ' + roleClass + '">' + getRoleDisplayName(user.role) + '</span></div></div></div>' +
+                    '<div class="user-perm-body">' +
+                    '<div class="perm-group"><div class="perm-group-title">内容权限</div><div class="perm-toggles">' +
+                    buildPermToggle(user.username, 'view', '查看', '浏览信件与媒体', perms.view, viewDisabled) +
+                    buildPermToggle(user.username, 'edit', '编辑', '修改信件正文', perms.edit, isProtected) +
+                    buildPermToggle(user.username, 'upload', '上传', '图片/视频/语音区', perms.upload, isProtected) +
+                    '</div></div>' +
+                    '<div class="perm-group"><div class="perm-group-title">管理权限</div><div class="perm-toggles">' +
+                    buildPermToggle(user.username, 'visitor', '访客记录', '访问统计', perms.visitor, isProtected) +
+                    buildPermToggle(user.username, 'backup', '备份导出', '导出数据', perms.backup, isProtected) +
+                    '</div></div>' +
+                    '<div class="perm-group"><div class="perm-group-title">会员等级</div>' + vipBlock + '</div></div>' +
+                    footer + '</div>';
             }).join('');
         }
         
@@ -4177,18 +6689,12 @@
         }
         
         function openAddUserModal() {
-            document.getElementById('admin-add-username').value = '';
-            document.getElementById('admin-add-password').value = '';
-            document.getElementById('perm-edit').checked = false;
-            document.getElementById('perm-upload').checked = false;
-            document.getElementById('perm-visitor').checked = false;
-            document.getElementById('perm-backup').checked = false;
-            document.getElementById('admin-add-viplevel').value = '0';
-            document.getElementById('add-user-modal').style.display = 'flex';
+            resetAddUserForm();
+            showAdminTab('adduser');
         }
         
         function closeAddUserModal() {
-            document.getElementById('add-user-modal').style.display = 'none';
+            showAdminTab('users');
         }
         
         function adminAddUser() {
@@ -4222,7 +6728,7 @@
             
             USERS[username] = {
                 password: password,
-                role: 'viewer',
+                role: editPerm ? 'editor' : 'viewer',
                 permissions: {
                     view: true,
                     edit: editPerm,
@@ -4230,7 +6736,8 @@
                     visitor: visitorPerm,
                     backup: backupPerm
                 },
-                vipLevel: vipLevel
+                vipLevel: vipLevel,
+                avatar: ''
             };
             
             saveUsersToCloud();
@@ -4257,33 +6764,39 @@
             loadUsers();
         }
         
-        function saveUsersToCloud() {
-            if (cloudStorageAvailable) {
-                var usersData = {
-                    users: USERS,
-                    pendingUsers: loadFromStorage(STORAGE_KEYS.PENDING_USERS, [])
-                };
-                saveToCloud('users.json', JSON.stringify(usersData));
+        async function saveUsersToCloud() {
+            if (!GIST_ID || !GITHUB_TOKEN) return;
+            var usersData = {
+                users: USERS,
+                pendingUsers: loadFromStorage(STORAGE_KEYS.PENDING_USERS, []),
+                friends: loadFriendsData()
+            };
+            try {
+                await patchGistFile(GIST_USERS_FILE, JSON.stringify(usersData, null, 2));
+            } catch (e) {
+                console.error('保存用户数据到 Gist 失败:', e);
             }
         }
         
         async function loadUsersFromCloud() {
-            if (!cloudStorageAvailable) return false;
-            
+            if (!GIST_ID) return false;
             try {
-                var data = await loadFromCloud('users.json');
-                if (data) {
-                    var usersData = JSON.parse(data);
-                    if (usersData.users) {
-                        Object.assign(USERS, usersData.users);
-                    }
-                    if (usersData.pendingUsers) {
-                        saveToStorage(STORAGE_KEYS.PENDING_USERS, usersData.pendingUsers);
-                    }
-                    return true;
+                var content = await getGistFile(GIST_USERS_FILE);
+                if (!content) return false;
+                var usersData = JSON.parse(content);
+                if (usersData.users) {
+                    Object.assign(USERS, usersData.users);
                 }
+                if (usersData.pendingUsers) {
+                    saveToStorage(STORAGE_KEYS.PENDING_USERS, usersData.pendingUsers);
+                }
+                if (usersData.friends) {
+                    saveToStorage(STORAGE_KEYS.FRIENDS, usersData.friends);
+                    updateFriendRequestBadge();
+                }
+                return true;
             } catch (e) {
-                console.error('加载用户数据失败:', e);
+                console.error('从 Gist 加载用户数据失败:', e);
             }
             return false;
         }
@@ -4392,16 +6905,14 @@
             var messageList = document.getElementById('message-list');
             var item = document.createElement('div');
             item.className = 'message-item';
-            item.innerHTML = `
-                <div class="message-header">
-                    <span>
-                        <span class="message-username">${escapeHtml(message.username)}</span>
-                        <span class="message-role">${message.role === 'editor' ? '编辑者' : '查看者'}</span>
-                    </span>
-                    <span class="message-time">${message.time}</span>
-                </div>
-                <div class="message-content">${escapeHtml(message.content)}</div>
-            `;
+            item.innerHTML =
+                '<div class="message-header">' +
+                '<div class="message-header-left">' +
+                getUserAvatarHtml(message.username, 'sm', getRoleBadgeClass(message.role)) +
+                '<span><span class="message-username">' + escapeHtml(message.username) + '</span>' +
+                '<span class="message-role">' + (message.role === 'editor' ? '编辑者' : '查看者') + '</span></span></div>' +
+                '<span class="message-time">' + message.time + '</span></div>' +
+                '<div class="message-content">' + escapeHtml(message.content) + '</div>';
             messageList.appendChild(item);
             messageList.scrollTop = messageList.scrollHeight;
         }
@@ -4555,9 +7066,11 @@
                     musicUrl: musicUrl,
                     mediaItems: mediaItems,
                     voiceMessages: voiceMessages,
+                    letterVoicesDefault: getLetterVoices('default'),
+                    letters: loadFromStorage(STORAGE_KEYS.LETTERS, []),
                     messages: messages,
                     backupTime: new Date().toISOString(),
-                    version: '1.0'
+                    version: '1.1'
                 };
                 
                 var blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
@@ -4748,9 +7261,38 @@
             }
         }
         
+        async function handleInsertVoiceUpload(event) {
+            if (currentUser.role !== 'editor') {
+                showToast('只有编辑者可以插入录音');
+                return;
+            }
+            var file = event.target.files[0];
+            event.target.value = '';
+            if (!file) return;
+            if (!file.type.startsWith('audio/') && !/\.(mp3|wav|m4a|aac|ogg|webm|flac)$/i.test(file.name)) {
+                showToast('请选择音频文件（mp3、wav、m4a 等）');
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('录音文件不能超过 10MB');
+                return;
+            }
+            await addVoiceMessageFromSource(file, file.name);
+        }
+        
         async function addVoiceMessage(blob) {
-            showToast('正在上传语音...');
-            var file = new File([blob], 'voice.wav', { type: 'audio/wav' });
+            await addVoiceMessageFromSource(blob, 'recording.webm');
+        }
+        
+        async function addVoiceMessageFromSource(source, fileName) {
+            showToast('正在处理语音...');
+            var file;
+            if (source instanceof File) {
+                file = source;
+            } else {
+                var mime = source.type || 'audio/webm';
+                file = new File([source], fileName || 'recording.webm', { type: mime });
+            }
             var result = await uploadFileToCloud(file, 'voices');
             
             if (result) {
@@ -4759,7 +7301,8 @@
                     data: result.url,
                     key: result.key,
                     timestamp: new Date().toISOString(),
-                    privacy: voicePrivacy
+                    privacy: voicePrivacy,
+                    author: currentUser.username
                 };
                 
                 await saveVoiceToDB(newMessage);
@@ -4770,8 +7313,7 @@
                 item.dataset.id = newMessage.id;
                 item.dataset.privacy = voicePrivacy;
                 
-                var userVipLevel = currentUser ? (currentUser.vipLevel || 0) : 0;
-                var canAccess = voicePrivacy <= userVipLevel || currentUser.role === 'editor';
+                var canAccess = canAccessMedia(voicePrivacy, currentUser.username);
                 
                 var audio = document.createElement('audio');
                 audio.controls = true;
@@ -4805,9 +7347,10 @@
                 voiceList.insertBefore(item, voiceList.firstChild);
                 
                 syncAllDataToCloud();
-                showToast('语音上传成功，权限: ' + getPrivacyText(voicePrivacy));
+                var actionText = source instanceof File ? '录音已插入' : '语音已录制';
+                showToast(actionText + '，权限: ' + getPrivacyText(voicePrivacy));
             } else {
-                showToast('语音上传失败');
+                showToast(source instanceof File ? '插入录音失败' : '语音上传失败');
             }
         }
         
@@ -4936,15 +7479,15 @@
             event.target.value = '';
         }
         
-        function addMediaToGallery(src, type, name, itemId, privacyLevel) {
+        function addMediaToGallery(src, type, name, itemId, privacyLevel, authorUsername) {
             var gallery = document.getElementById('gallery-container');
             var newItem = document.createElement('div');
             newItem.className = 'gallery-item';
             newItem.dataset.id = itemId;
             newItem.dataset.privacy = privacyLevel || 0;
+            newItem.dataset.author = authorUsername || (currentUser ? currentUser.username : '');
             
-            var userVipLevel = currentUser ? (currentUser.vipLevel || 0) : 0;
-            var canAccess = (privacyLevel || 0) <= userVipLevel || currentUser.role === 'editor';
+            var canAccess = canAccessMedia(privacyLevel || 0, authorUsername || (currentUser ? currentUser.username : ''));
             
             var media;
             if (type === 'image') {
@@ -5047,17 +7590,19 @@
             updateDateTime();
             loadWeather();
             
-            var cloudLoaded = await loadAllDataFromCloud();
-            
-            if (!cloudLoaded) {
-                var letterContent = loadLetterContent();
+            var letterContent = loadLetterContent();
+            if (letterContent) {
                 document.getElementById('letter-content').textContent = letterContent;
-                
-                var musicUrl = loadMusicUrl();
-                if (musicUrl) {
-                    bgm.src = musicUrl;
-                }
             }
+            
+            var musicUrl = loadMusicUrl();
+            if (musicUrl) {
+                bgm.src = musicUrl;
+            }
+            
+            await loadAllDataFromCloud();
+            
+            loadLettersFromStorage();
             
             setTimeout(function() {
                 loadMediaGallery();
@@ -5140,6 +7685,10 @@
                     var newItem = document.createElement('div');
                     newItem.className = 'gallery-item';
                     newItem.dataset.id = item.id;
+                    newItem.dataset.privacy = item.privacy || 0;
+                    newItem.dataset.author = item.author || '';
+                    
+                    var canAccess = canAccessMedia(item.privacy || 0, item.author);
                     
                     var media;
                     if (item.type === 'image') {
@@ -5153,9 +7702,24 @@
                         media.muted = true;
                     }
                     
-                    media.onclick = function() {
-                        openMediaViewer(newItem, item.type);
-                    };
+                    if (!canAccess) {
+                        media.classList.add('locked-media');
+                    } else {
+                        media.onclick = function() {
+                            openMediaViewer(newItem, item.type);
+                        };
+                    }
+                    
+                    var privacyBadge = document.createElement('span');
+                    privacyBadge.className = 'media-privacy-badge ' + getPrivacyClass(item.privacy || 0);
+                    privacyBadge.textContent = getPrivacyText(item.privacy || 0);
+                    
+                    if (!canAccess) {
+                        var lockOverlay = document.createElement('div');
+                        lockOverlay.className = 'locked-overlay';
+                        lockOverlay.innerHTML = '<span class="lock-icon">🔒</span><span class="lock-text">' + getPrivacyText(item.privacy || 0) + '</span>';
+                        newItem.appendChild(lockOverlay);
+                    }
                     
                     var deleteBtn = document.createElement('button');
                     deleteBtn.className = 'delete-media';
@@ -5170,6 +7734,7 @@
                     }
                     
                     newItem.appendChild(media);
+                    newItem.appendChild(privacyBadge);
                     newItem.appendChild(deleteBtn);
                     gallery.insertBefore(newItem, uploadImageLabel);
                 });
@@ -5222,10 +7787,23 @@
                         var item = document.createElement('div');
                         item.className = 'voice-item';
                         item.dataset.id = msg.id;
+                        var priv = msg.privacy || 0;
+                        var canAccess = canAccessMedia(priv, msg.author);
                         
                         var audio = document.createElement('audio');
                         audio.controls = true;
                         audio.src = msg.data;
+                        if (!canAccess) {
+                            audio.style.display = 'none';
+                            var lockOverlay = document.createElement('div');
+                            lockOverlay.className = 'locked-overlay';
+                            lockOverlay.innerHTML = '<span class="lock-icon">🔒</span><span class="lock-text">' + getPrivacyText(priv) + '</span>';
+                            item.appendChild(lockOverlay);
+                        }
+                        
+                        var privacyBadge = document.createElement('span');
+                        privacyBadge.className = 'media-privacy-badge ' + getPrivacyClass(priv);
+                        privacyBadge.textContent = getPrivacyText(priv);
                         
                         var deleteBtn = document.createElement('button');
                         deleteBtn.className = 'delete-btn';
@@ -5238,6 +7816,7 @@
                         };
                         
                         item.appendChild(audio);
+                        item.appendChild(privacyBadge);
                         item.appendChild(deleteBtn);
                         voiceList.insertBefore(item, voiceList.firstChild);
                     }
@@ -5261,15 +7840,6 @@
             } catch (e) {
                 showToast('删除失败');
             }
-        }
-        
-        function showToast(message) {
-            var toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(function() {
-                toast.classList.remove('show');
-            }, 3000);
         }
         
         function deleteSampleImage(btn) {
@@ -5336,23 +7906,46 @@
         
         function autoLogin() {
             var savedUser = loadFromStorage(STORAGE_KEYS.LOGGED_USER, null);
-            if (savedUser) {
-                currentUser = savedUser;
+            if (savedUser && USERS[savedUser.username]) {
+                currentUser = {
+                    username: savedUser.username,
+                    role: USERS[savedUser.username].role,
+                    permissions: USERS[savedUser.username].permissions || { view: true, edit: false, upload: false, visitor: false, backup: false },
+                    vipLevel: USERS[savedUser.username].vipLevel || 0,
+                    avatar: USERS[savedUser.username].avatar || ''
+                };
+                saveToStorage(STORAGE_KEYS.LOGGED_USER, currentUser);
                 
                 document.getElementById('login-container').style.display = 'none';
-                document.getElementById('main-container').style.display = 'block';
                 
-                document.getElementById('user-name').textContent = savedUser.username;
+                if (currentUser.role === 'admin') {
+                    document.getElementById('main-container').style.display = 'none';
+                    document.getElementById('admin-container').style.display = 'flex';
+                    loadUsersFromCloud().then(function() {
+                        loadPendingUsers();
+                        loadUsers();
+                        updatePendingBadge();
+                    });
+                    showToast('欢迎回来，青泥管理员');
+                    return;
+                }
+                
+                document.getElementById('main-container').style.display = 'block';
+                updateCurrentUserHeader();
                 var roleSpan = document.getElementById('user-role');
-                roleSpan.textContent = savedUser.role === 'editor' ? '编辑者' : '查看者';
-                if (savedUser.role === 'viewer') {
+                roleSpan.textContent = currentUser.role === 'editor' ? '编辑者' : '查看者';
+                if (currentUser.role === 'viewer') {
                     roleSpan.className = 'role viewer-role';
                 } else {
                     roleSpan.className = 'role';
                 }
                 
                 applyPermissions();
+                loadUsersFromCloud().then(function() {
+                    updateFriendRequestBadge();
+                });
                 loadSavedData();
+                startAutoSync();
                 showToast('欢迎回来，' + savedUser.username);
                 
                 setTimeout(function() {
