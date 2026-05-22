@@ -1136,6 +1136,9 @@
         
         function initCloudStorage() {
             try {
+                console.log('开始初始化云端存储...');
+                console.log('配置信息:', CLOUD_CONFIG);
+                
                 ossClient = new OSS({
                     region: CLOUD_CONFIG.region,
                     bucket: CLOUD_CONFIG.bucket,
@@ -1144,10 +1147,10 @@
                     accessKeySecret: CLOUD_CONFIG.accessKeySecret,
                     secure: true
                 });
-                console.log('云端存储初始化成功');
+                console.log('✓ OSS客户端创建成功');
                 checkCloudConnection();
             } catch (e) {
-                console.error('云端存储初始化失败:', e);
+                console.error('❌ 云端存储初始化失败:', e);
                 setCloudStatus(false);
             }
         }
@@ -1169,17 +1172,22 @@
         
         async function checkCloudConnection() {
             if (!ossClient) {
+                console.log('❌ ossClient 未初始化');
                 setCloudStatus(false);
                 return;
             }
             
             try {
+                console.log('正在测试云端连接...');
                 await ossClient.list({ maxKeys: 1 });
                 setCloudStatus(true);
-                console.log('云端连接正常');
+                console.log('✓ 云端连接正常');
+                showToast('✓ 云端已连接');
             } catch (e) {
-                console.error('云端连接失败:', e);
+                console.error('❌ 云端连接失败:', e);
+                console.error('错误详情:', e.message, e.code);
                 setCloudStatus(false);
+                showToast('⚠️ 云端连接失败: ' + (e.message || '网络错误'));
             }
         }
         
