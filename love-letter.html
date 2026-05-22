@@ -1206,14 +1206,23 @@
         }
         
         async function saveToCloud(data) {
-            if (!ossClient) return false;
+            if (!ossClient) {
+                console.error('❌ ossClient 未初始化');
+                return false;
+            }
             
             try {
-                await ossClient.put(CLOUD_CONFIG.dataFile, JSON.stringify(data, null, 2));
-                console.log('数据同步到云端成功');
+                var jsonString = JSON.stringify(data, null, 2);
+                console.log('准备同步数据，大小:', jsonString.length, '字节');
+                console.log('媒体文件数量:', data.mediaItems ? data.mediaItems.length : 0);
+                console.log('语音消息数量:', data.voiceMessages ? data.voiceMessages.length : 0);
+                
+                await ossClient.put(CLOUD_CONFIG.dataFile, jsonString);
+                console.log('✓ 数据同步到云端成功');
                 return true;
             } catch (e) {
-                console.error('数据同步到云端失败:', e);
+                console.error('❌ 数据同步到云端失败:', e);
+                console.error('错误详情:', e.message, e.code);
                 return false;
             }
         }
