@@ -1708,6 +1708,128 @@
             background: rgba(255, 107, 157, 0.3);
         }
         
+        .admin-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .admin-header-bar {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .admin-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logout-admin {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            padding: 10px 24px;
+            border-radius: 20px;
+            color: #ff4757;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-admin:hover {
+            background: rgba(255, 71, 87, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .admin-main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .admin-sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 30px 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .admin-nav-item {
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.7);
+            border-left: 3px solid transparent;
+        }
+        
+        .admin-nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+        
+        .admin-nav-item.active {
+            background: rgba(255, 107, 157, 0.2);
+            color: #ff6b9d;
+            border-left-color: #ff6b9d;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+        
+        .nav-text {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .admin-content-area {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        
+        .admin-tab-content {
+            display: block;
+        }
+        
+        .admin-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 107, 157, 0.3);
+        }
+        
+        .add-user-form {
+            max-width: 600px;
+        }
+        
+        .add-user-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 30px;
+        }
+        
         .voice-privacy-selector select {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -2340,129 +2462,40 @@
             <button class="cancel-btn" onclick="hideRegisterForm()">取 消</button>
             <div class="error-message" id="register-error">请填写正确的信息</div>
         </div>
-        
-        <div class="privacy-modal" id="privacy-modal" style="display: none;">
-            <div class="privacy-modal-content">
-                <div class="privacy-modal-header">
-                    <h3>设置访问权限</h3>
-                    <button class="close-btn" onclick="closePrivacyModal()">×</button>
-                </div>
-                <div class="privacy-modal-body">
-                    <p>请选择该媒体的访问权限：</p>
-                    <div class="privacy-options">
-                        <label class="privacy-option">
-                            <input type="radio" name="privacy" value="0" checked>
-                            <span>🔓 公开 - 所有人可见</span>
-                        </label>
-                        <label class="privacy-option">
-                            <input type="radio" name="privacy" value="1">
-                            <span>⭐ 会员可见</span>
-                        </label>
-                        <label class="privacy-option">
-                            <input type="radio" name="privacy" value="2">
-                            <span>⭐⭐ 超级会员可见</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="privacy-modal-footer">
-                    <button class="cancel-btn" onclick="closePrivacyModal()">取消</button>
-                    <button class="confirm-btn" onclick="confirmUpload()">确认上传</button>
-                </div>
-            </div>
+    </div>
+    
+    <div class="admin-container" id="admin-container" style="display: none;">
+        <div class="admin-header-bar">
+            <div class="admin-logo">🔐 青泥管理系统</div>
+            <button class="logout-admin" onclick="adminLogout()">退出登录</button>
         </div>
         
-        <div class="letter-modal" id="letter-modal" style="display: none;">
-            <div class="letter-modal-content">
-                <div class="letter-modal-header">
-                    <h3 id="letter-modal-title">新建信件</h3>
-                    <button class="close-btn" onclick="closeLetterModal()">×</button>
+        <div class="admin-main-content">
+            <div class="admin-sidebar">
+                <div class="admin-nav-item active" onclick="showAdminTab('pending')">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">待审核申请</span>
                 </div>
-                <div class="letter-modal-body">
-                    <div class="form-group">
-                        <label>信件标题</label>
-                        <input type="text" id="letter-title" placeholder="请输入信件标题">
-                    </div>
-                    <div class="form-group">
-                        <label>信件内容</label>
-                        <textarea id="letter-content-input" placeholder="写下你想说的话..." rows="8"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>访问权限</label>
-                        <div class="privacy-options">
-                            <label class="privacy-option">
-                                <input type="radio" name="letter-privacy" value="0" checked>
-                                <span>🔓 公开</span>
-                            </label>
-                            <label class="privacy-option">
-                                <input type="radio" name="letter-privacy" value="1">
-                                <span>⭐ 会员</span>
-                            </label>
-                            <label class="privacy-option">
-                                <input type="radio" name="letter-privacy" value="2">
-                                <span>⭐⭐ 超级会员</span>
-                            </label>
-                        </div>
-                    </div>
+                <div class="admin-nav-item" onclick="showAdminTab('users')">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-text">用户管理</span>
                 </div>
-                <div class="letter-modal-footer">
-                    <button class="cancel-btn" onclick="closeLetterModal()">取消</button>
-                    <button class="confirm-btn" id="letter-save-btn" onclick="saveLetter()">保存</button>
+                <div class="admin-nav-item" onclick="showAdminTab('adduser')">
+                    <span class="nav-icon">➕</span>
+                    <span class="nav-text">添加用户</span>
                 </div>
             </div>
-        </div>
-        
-        <div class="notification-panel" id="notification-panel" style="display: none;">
-            <div class="notification-header">
-                <h3>🔔 通知</h3>
-                <button class="close-btn" onclick="closeNotifications()">×</button>
-            </div>
-            <div class="notification-list" id="notification-list"></div>
-        </div>
-        
-        <div class="stats-panel" id="stats-panel" style="display: none;">
-            <div class="stats-header">
-                <h3>📊 数据统计</h3>
-                <button class="close-btn" onclick="closeStats()">×</button>
-            </div>
-            <div class="stats-content">
-                <div class="stat-card">
-                    <div class="stat-value" id="stat-visitors">0</div>
-                    <div class="stat-label">总访客数</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="stat-messages">0</div>
-                    <div class="stat-label">留言数</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="stat-images">0</div>
-                    <div class="stat-label">图片数</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="stat-videos">0</div>
-                    <div class="stat-label">视频数</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="admin-panel" id="admin-panel">
-            <button class="back-btn" onclick="logout()">退出登录</button>
-            <div class="admin-header">
-                <div class="login-icon">🔐</div>
-                <h1>管理员控制台</h1>
-                <p>管理用户权限</p>
-            </div>
-            <div class="admin-content">
-                <div class="admin-section">
-                    <div class="section-header">
-                        <h2>待审核注册申请</h2>
-                        <button class="add-user-btn" onclick="openAddUserModal()">+ 添加用户</button>
-                    </div>
+            
+            <div class="admin-content-area">
+                <div class="admin-tab-content" id="admin-tab-pending">
+                    <div class="admin-section-title">待审核注册申请</div>
                     <div class="pending-list" id="pending-list">
                         <div class="no-pending">暂无待审核的注册申请</div>
                     </div>
                 </div>
-                <div class="admin-section">
-                    <h2>已注册用户权限管理</h2>
+                
+                <div class="admin-tab-content" id="admin-tab-users" style="display: none;">
+                    <div class="admin-section-title">已注册用户权限管理</div>
                     <div class="permissions-table-container">
                         <table class="permissions-table">
                             <thead>
@@ -2483,62 +2516,160 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="add-user-modal" id="add-user-modal" style="display: none;">
-            <div class="add-user-content">
-                <div class="add-user-header">
-                    <h3>添加用户</h3>
-                    <button class="close-btn" onclick="closeAddUserModal()">×</button>
-                </div>
-                <div class="add-user-body">
-                    <div class="form-group">
-                        <label>用户名</label>
-                        <input type="text" id="admin-add-username" placeholder="请输入用户名（中文，最多4个字符）">
-                    </div>
-                    <div class="form-group">
-                        <label>密码</label>
-                        <input type="password" id="admin-add-password" placeholder="请输入密码（4位数字）">
-                    </div>
-                    <div class="form-group">
-                        <label>初始权限</label>
-                        <div class="permission-checkboxes">
-                            <label class="permission-checkbox-label">
-                                <input type="checkbox" id="perm-view" checked disabled>
-                                <span>查看权限</span>
-                            </label>
-                            <label class="permission-checkbox-label">
-                                <input type="checkbox" id="perm-edit">
-                                <span>编辑权限</span>
-                            </label>
-                            <label class="permission-checkbox-label">
-                                <input type="checkbox" id="perm-upload">
-                                <span>上传权限</span>
-                            </label>
-                            <label class="permission-checkbox-label">
-                                <input type="checkbox" id="perm-visitor">
-                                <span>访客记录</span>
-                            </label>
-                            <label class="permission-checkbox-label">
-                                <input type="checkbox" id="perm-backup">
-                                <span>备份导出</span>
-                            </label>
+                
+                <div class="admin-tab-content" id="admin-tab-adduser" style="display: none;">
+                    <div class="admin-section-title">添加新用户</div>
+                    <div class="add-user-form">
+                        <div class="form-group">
+                            <label>用户名</label>
+                            <input type="text" id="admin-add-username" placeholder="请输入用户名（中文，最多4个字符）">
+                        </div>
+                        <div class="form-group">
+                            <label>密码</label>
+                            <input type="password" id="admin-add-password" placeholder="请输入密码（4位数字）">
+                        </div>
+                        <div class="form-group">
+                            <label>初始权限</label>
+                            <div class="permission-checkboxes">
+                                <label class="permission-checkbox-label">
+                                    <input type="checkbox" id="perm-view" checked disabled>
+                                    <span>查看权限</span>
+                                </label>
+                                <label class="permission-checkbox-label">
+                                    <input type="checkbox" id="perm-edit">
+                                    <span>编辑权限</span>
+                                </label>
+                                <label class="permission-checkbox-label">
+                                    <input type="checkbox" id="perm-upload">
+                                    <span>上传权限</span>
+                                </label>
+                                <label class="permission-checkbox-label">
+                                    <input type="checkbox" id="perm-visitor">
+                                    <span>访客记录</span>
+                                </label>
+                                <label class="permission-checkbox-label">
+                                    <input type="checkbox" id="perm-backup">
+                                    <span>备份导出</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>会员等级</label>
+                            <select id="admin-add-viplevel">
+                                <option value="0">普通用户</option>
+                                <option value="1">⭐ 会员</option>
+                                <option value="2">⭐⭐ 超级会员</option>
+                            </select>
+                        </div>
+                        <div class="add-user-buttons">
+                            <button class="cancel-btn" onclick="resetAddUserForm()">重置</button>
+                            <button class="confirm-btn" onclick="adminAddUser()">确认添加</button>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>会员等级</label>
-                        <select id="admin-add-viplevel">
-                            <option value="0">普通用户</option>
-                            <option value="1">⭐ 会员</option>
-                            <option value="2">⭐⭐ 超级会员</option>
-                        </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="privacy-modal" id="privacy-modal" style="display: none;">
+        <div class="privacy-modal-content">
+            <div class="privacy-modal-header">
+                <h3>设置访问权限</h3>
+                <button class="close-btn" onclick="closePrivacyModal()">×</button>
+            </div>
+            <div class="privacy-modal-body">
+                <p>请选择该媒体的访问权限：</p>
+                <div class="privacy-options">
+                    <label class="privacy-option">
+                        <input type="radio" name="privacy" value="0" checked>
+                        <span>🔓 公开 - 所有人可见</span>
+                    </label>
+                    <label class="privacy-option">
+                        <input type="radio" name="privacy" value="1">
+                        <span>⭐ 会员可见</span>
+                    </label>
+                    <label class="privacy-option">
+                        <input type="radio" name="privacy" value="2">
+                        <span>⭐⭐ 超级会员可见</span>
+                    </label>
+                </div>
+            </div>
+            <div class="privacy-modal-footer">
+                <button class="cancel-btn" onclick="closePrivacyModal()">取消</button>
+                <button class="confirm-btn" onclick="confirmUpload()">确认上传</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="letter-modal" id="letter-modal" style="display: none;">
+        <div class="letter-modal-content">
+            <div class="letter-modal-header">
+                <h3 id="letter-modal-title">新建信件</h3>
+                <button class="close-btn" onclick="closeLetterModal()">×</button>
+            </div>
+            <div class="letter-modal-body">
+                <div class="form-group">
+                    <label>信件标题</label>
+                    <input type="text" id="letter-title" placeholder="请输入信件标题">
+                </div>
+                <div class="form-group">
+                    <label>信件内容</label>
+                    <textarea id="letter-content-input" placeholder="写下你想说的话..." rows="8"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>访问权限</label>
+                    <div class="privacy-options">
+                        <label class="privacy-option">
+                            <input type="radio" name="letter-privacy" value="0" checked>
+                            <span>🔓 公开</span>
+                        </label>
+                        <label class="privacy-option">
+                            <input type="radio" name="letter-privacy" value="1">
+                            <span>⭐ 会员</span>
+                        </label>
+                        <label class="privacy-option">
+                            <input type="radio" name="letter-privacy" value="2">
+                            <span>⭐⭐ 超级会员</span>
+                        </label>
                     </div>
                 </div>
-                <div class="add-user-footer">
-                    <button class="cancel-btn" onclick="closeAddUserModal()">取消</button>
-                    <button class="confirm-btn" onclick="adminAddUser()">确认添加</button>
-                </div>
+            </div>
+            <div class="letter-modal-footer">
+                <button class="cancel-btn" onclick="closeLetterModal()">取消</button>
+                <button class="confirm-btn" id="letter-save-btn" onclick="saveLetter()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification-panel" id="notification-panel" style="display: none;">
+        <div class="notification-header">
+            <h3>🔔 通知</h3>
+            <button class="close-btn" onclick="closeNotifications()">×</button>
+        </div>
+        <div class="notification-list" id="notification-list"></div>
+    </div>
+    
+    <div class="stats-panel" id="stats-panel" style="display: none;">
+        <div class="stats-header">
+            <h3>📊 数据统计</h3>
+            <button class="close-btn" onclick="closeStats()">×</button>
+        </div>
+        <div class="stats-content">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-visitors">0</div>
+                <div class="stat-label">总访客数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-messages">0</div>
+                <div class="stat-label">留言数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-images">0</div>
+                <div class="stat-label">图片数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-videos">0</div>
+                <div class="stat-label">视频数</div>
             </div>
         </div>
     </div>
@@ -3518,10 +3649,10 @@
                 if (currentUser.role === 'admin') {
                     document.getElementById('login-container').style.display = 'none';
                     document.getElementById('main-container').style.display = 'none';
-                    document.getElementById('admin-panel').style.display = 'block';
+                    document.getElementById('admin-container').style.display = 'flex';
                     loadPendingUsers();
                     loadUsers();
-                    showToast('欢迎管理员，' + username);
+                    showToast('欢迎青泥管理员');
                     return;
                 }
                 
@@ -3627,13 +3758,71 @@
             
             document.getElementById('login-container').style.display = 'flex';
             document.getElementById('main-container').style.display = 'none';
-            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('admin-container').style.display = 'none';
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
             document.getElementById('music-btn').classList.remove('playing');
             document.getElementById('music-icon').innerHTML = '<path d="M8 5v14l11-7z"/>';
             
             showToast('已退出登录');
+        }
+        
+        function adminLogout() {
+            currentUser = null;
+            localStorage.removeItem(STORAGE_KEYS.LOGGED_USER);
+            
+            document.getElementById('admin-container').style.display = 'none';
+            document.getElementById('login-container').style.display = 'flex';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            showToast('已退出管理系统');
+        }
+        
+        function showAdminTab(tabName) {
+            var tabs = document.querySelectorAll('.admin-nav-item');
+            tabs.forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            
+            var currentTab = document.querySelector('.admin-nav-item[onclick="showAdminTab(\'' + tabName + '\')"]');
+            if (currentTab) {
+                currentTab.classList.add('active');
+            }
+            
+            var contents = document.querySelectorAll('.admin-tab-content');
+            contents.forEach(function(content) {
+                content.style.display = 'none';
+            });
+            
+            var targetContent = document.getElementById('admin-tab-' + tabName);
+            if (targetContent) {
+                targetContent.style.display = 'block';
+            }
+            
+            if (tabName === 'pending') {
+                loadPendingUsers();
+            } else if (tabName === 'users') {
+                loadUsers();
+            }
+        }
+        
+        function resetAddUserForm() {
+            document.getElementById('admin-add-username').value = '';
+            document.getElementById('admin-add-password').value = '';
+            document.getElementById('perm-edit').checked = false;
+            document.getElementById('perm-upload').checked = false;
+            document.getElementById('perm-visitor').checked = false;
+            document.getElementById('perm-backup').checked = false;
+            document.getElementById('admin-add-viplevel').value = '0';
+        }
+        
+        function openAddUserModal() {
+            showAdminTab('adduser');
+        }
+        
+        function closeAddUserModal() {
+            showAdminTab('pending');
         }
         
         function updateDateTime() {
@@ -4045,8 +4234,8 @@
             };
             
             saveUsersToCloud();
-            loadUsers();
-            closeAddUserModal();
+            resetAddUserForm();
+            showAdminTab('users');
             
             var vipText = vipLevel === 2 ? '⭐⭐ 超级会员' : vipLevel === 1 ? '⭐ 会员' : '普通用户';
             showToast('✅ 用户 ' + username + ' 已添加，等级: ' + vipText);
