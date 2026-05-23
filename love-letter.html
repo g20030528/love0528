@@ -1795,6 +1795,37 @@
             border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
         
+        .login-music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 107, 157, 0.9);
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .login-music-control:hover {
+            transform: scale(1.1);
+        }
+
+        .login-music-control.playing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .login-music-control svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
         .music-control {
             position: fixed;
             bottom: 20px;
@@ -1810,6 +1841,7 @@
             z-index: 1000;
             box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
             transition: all 0.3s ease;
+            display: none;
         }
         
         .music-control:hover {
@@ -3640,7 +3672,14 @@
 <body>
     <div class="stars" id="stars"></div>
     <div class="particles" id="particles"></div>
-    
+    <audio id="login-bgm" loop></audio>
+
+    <div class="login-music-control" id="login-music-btn" onclick="toggleLoginMusic()">
+        <svg id="login-music-icon" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+        </svg>
+    </div>
+
     <div class="login-container" id="login-container">
         <div class="login-box">
             <div class="login-header">
@@ -3660,7 +3699,6 @@
             </div>
             <button class="login-btn" onclick="handleLogin()">登 录</button>
             <div class="error-message" id="login-error">账户名或密码错误，请重试</div>
-            <button class="register-btn" onclick="showRegisterForm()">注 册</button>
         </div>
         
         <div class="register-box" id="register-box" style="display: none;">
@@ -3718,6 +3756,13 @@
                     <div class="nav-text-wrap">
                         <span class="nav-text">添加用户</span>
                         <span class="nav-desc">手动创建账户</span>
+                    </div>
+                </div>
+                <div class="admin-nav-item" data-tab="music" onclick="showAdminTab('music')">
+                    <span class="nav-icon">🎵</span>
+                    <div class="nav-text-wrap">
+                        <span class="nav-text">音乐管理</span>
+                        <span class="nav-desc">登录音乐/背景音乐</span>
                     </div>
                 </div>
             </div>
@@ -3857,6 +3902,43 @@
                                 <button type="button" class="cancel-btn" onclick="resetAddUserForm()">重置</button>
                                 <button type="button" class="confirm-btn" onclick="adminAddUser()">确认添加</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-tab-content" id="admin-tab-music" style="display: none;">
+                    <div class="admin-page-header">
+                        <h2 class="admin-section-title">音乐管理</h2>
+                        <p class="admin-section-desc">管理登录界面音乐和背景音乐，添加、删除音乐列表。</p>
+                    </div>
+                    
+                    <div class="music-management-section">
+                        <h3 style="color: #fff; margin-bottom: 15px;">🎵 登录音乐</h3>
+                        <p style="color: rgba(255,255,255,0.6); margin-bottom: 15px;">设置登录界面播放的音乐。</p>
+                        <div class="music-upload-section">
+                            <input type="file" id="login-music-upload" accept="audio/*" onchange="handleLoginMusicUpload(event)" style="display:none">
+                            <button class="confirm-btn" onclick="document.getElementById('login-music-upload').click()">上传登录音乐</button>
+                            <span style="color: rgba(255,255,255,0.5); margin-left: 10px;">支持 mp3、wav、ogg</span>
+                        </div>
+                        <div id="login-music-preview" class="music-preview" style="margin-top: 15px;">
+                            <span style="color: rgba(255,255,255,0.6);">当前音乐: </span>
+                            <span id="current-login-music-name">未设置</span>
+                            <button class="cancel-btn" onclick="clearLoginMusic()" style="margin-left: 15px; width: auto; padding: 8px 15px;">清除</button>
+                        </div>
+                    </div>
+                    
+                    <div class="music-management-section" style="margin-top: 30px;">
+                        <h3 style="color: #fff; margin-bottom: 15px;">🎶 背景音乐</h3>
+                        <p style="color: rgba(255,255,255,0.6); margin-bottom: 15px;">设置登录后主页面的背景音乐。</p>
+                        <div class="music-upload-section">
+                            <input type="file" id="bgm-upload" accept="audio/*" onchange="handleBgmUpload(event)" style="display:none">
+                            <button class="confirm-btn" onclick="document.getElementById('bgm-upload').click()">上传背景音乐</button>
+                            <span style="color: rgba(255,255,255,0.5); margin-left: 10px;">支持 mp3、wav、ogg</span>
+                        </div>
+                        <div id="bgm-preview" class="music-preview" style="margin-top: 15px;">
+                            <span style="color: rgba(255,255,255,0.6);">当前音乐: </span>
+                            <span id="current-bgm-name">未设置</span>
+                            <button class="cancel-btn" onclick="clearBgm()" style="margin-left: 15px; width: auto; padding: 8px 15px;">清除</button>
                         </div>
                     </div>
                 </div>
@@ -4153,20 +4235,6 @@
                     <div class="letter-tab active" data-id="all">全部信件</div>
                 </div>
                 <div class="letters-container" id="letters-container">
-                    <div class="letter-card" data-id="default" onclick="openLetterDetailModal('default')">
-                        <div class="letter-card-header">
-                            <h3>亲爱的你</h3>
-                            <span class="letter-privacy public">公开</span>
-                        </div>
-                        <p class="letter-preview">分开的这些日子里，我每天都在想你...</p>
-                        <div class="letter-card-footer">
-                            <span class="letter-date">2024-01-15</span>
-                            <div class="letter-actions" id="default-letter-actions">
-                                <button class="letter-action-btn" onclick="event.stopPropagation(); openEditLetterModal('default')">编辑</button>
-                                <button class="letter-action-btn" onclick="event.stopPropagation(); deleteLetter('default')">删除</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             
@@ -4264,17 +4332,6 @@
         </div>
     </div>
     
-    <div class="modal" id="edit-modal">
-        <div class="modal-content">
-            <h3>编辑内容</h3>
-            <textarea id="edit-letter-text" placeholder="请输入内容..."></textarea>
-            <div class="modal-actions">
-                <button class="cancel-btn" onclick="closeEditModal()">取消</button>
-                <button class="confirm-btn" onclick="saveLetterContent()">保存</button>
-            </div>
-        </div>
-    </div>
-    
     <div class="modal" id="music-modal">
         <div class="modal-content">
             <h3>更改背景音乐</h3>
@@ -4333,11 +4390,12 @@
         var syncInterval = null;
         
         var STORAGE_KEYS = {
-            LETTER_CONTENT: 'love_letter_content',
             MUSIC_URL: 'love_letter_music_url',
+            LOGIN_MUSIC_URL: 'love_letter_login_music_url',
+            MUSIC_LIST: 'love_letter_music_list',
+            LOGIN_MUSIC_LIST: 'love_letter_login_music_list',
             MEDIA_ITEMS: 'love_letter_media',
             VOICE_MESSAGES: 'love_letter_voices',
-            LETTER_VOICES_DEFAULT: 'love_letter_default_voices',
             LETTERS: 'love_letter_letters',
             FRIENDS: 'love_letter_friends',
             LOGGED_USER: 'love_letter_logged_user'
@@ -4728,17 +4786,12 @@
                 var mediaItems = await getAllMediaFromDB();
                 var voiceMessages = await getAllVoicesFromDB();
                 
-                var letterContentEl = document.getElementById('letter-content');
-                var letterContent = letterContentEl ? letterContentEl.textContent : '';
-                
                 var musicUrl = bgm.src;
                 
                 var data = {
-                    letterContent: letterContent,
                     musicUrl: musicUrl,
                     mediaItems: mediaItems,
                     voiceMessages: voiceMessages,
-                    letterVoicesDefault: getLetterVoices('default'),
                     letters: loadFromStorage(STORAGE_KEYS.LETTERS, []),
                     lastUpdated: new Date().toISOString(),
                     version: Date.now(),
@@ -4747,7 +4800,6 @@
                 
                 var success = await saveToCloud(data);
                 if (success) {
-                    saveLetterContent(letterContent);
                     saveMusicUrl(musicUrl);
                     setCloudStatus(true);
                     showToast('✓ 数据已同步到云端');
@@ -4775,11 +4827,6 @@
                 if (data) {
                     var hasUpdates = false;
                     
-                    if (data.letterContent && data.letterContent !== document.getElementById('letter-content').textContent) {
-                        document.getElementById('letter-content').textContent = data.letterContent;
-                        saveLetterContent(data.letterContent);
-                        hasUpdates = true;
-                    }
                     if (data.musicUrl && data.musicUrl !== bgm.src) {
                         bgm.src = data.musicUrl;
                         saveMusicUrl(data.musicUrl);
@@ -4804,10 +4851,6 @@
                                 hasUpdates = true;
                             }
                         }
-                    }
-                    if (data.letterVoicesDefault) {
-                        setLetterVoices('default', data.letterVoicesDefault);
-                        hasUpdates = true;
                     }
                     if (data.letters) {
                         saveToStorage(STORAGE_KEYS.LETTERS, data.letters);
@@ -4852,15 +4895,6 @@
                 console.error('读取失败:', e);
                 return defaultValue;
             }
-        }
-        
-        function saveLetterContent(content) {
-            saveToStorage(STORAGE_KEYS.LETTER_CONTENT, content);
-        }
-        
-        function loadLetterContent() {
-            var defaultContent = '亲爱的你：\n\n分开的这些日子里，我每天都在想你。每一个安静的夜晚，每一个熟悉的街角，都会让我想起我们曾经一起走过的路。我知道，是我的幼稚和不懂珍惜，让你失望了。\n\n我常常在想，如果当初我能更成熟一点，更懂得包容和理解，我们是不是就不会走到今天这一步。你是我生命中最特别的存在，是我想要用一生去守护的人。\n\n我知道现在说这些可能已经太晚，但我真的无法放下你。我愿意改变，愿意为了你变成更好的人。如果你还愿意给我一次机会，我一定会用我的余生去证明，你选择我，是正确的决定。\n\n                                                                                                    永远爱你的人';
-            return loadFromStorage(STORAGE_KEYS.LETTER_CONTENT, defaultContent);
         }
         
         function saveMusicUrl(url) {
@@ -4974,24 +5008,19 @@
         }
         
         function openEditLetterModal(letterId) {
-            if (!currentUser || currentUser.role === 'viewer') {
-                showToast('只有编辑者可以编辑信件');
+            if (!currentUser || (currentUser.role !== 'editor' && currentUser.role !== 'admin')) {
+                showToast('只有编辑者或管理员可以编辑信件');
                 return;
             }
             
             editingLetterId = letterId;
             document.getElementById('letter-modal-title').textContent = '编辑信件';
             
-            if (letterId === 'default') {
-                document.getElementById('letter-title').value = document.querySelector('.letter-card[data-id="default"] h3').textContent;
-                document.getElementById('letter-content-input').value = document.getElementById('letter-content').textContent;
-            } else {
-                var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
-                var letter = letters.find(function(l) { return l.id === letterId; });
-                if (letter) {
-                    document.getElementById('letter-title').value = letter.title;
-                    document.getElementById('letter-content-input').value = letter.content;
-                }
+            var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
+            var letter = letters.find(function(l) { return l.id === letterId; });
+            if (letter) {
+                document.getElementById('letter-title').value = letter.title;
+                document.getElementById('letter-content-input').value = letter.content;
             }
             
             document.getElementById('letter-modal').style.display = 'flex';
@@ -5009,20 +5038,9 @@
         
         function openLetterDetailModal(letterId) {
             viewingLetterId = letterId;
-            var letter = null;
             
-            if (letterId === 'default') {
-                letter = {
-                    id: 'default',
-                    title: document.querySelector('.letter-card[data-id="default"] h3').textContent,
-                    content: document.getElementById('letter-content').textContent,
-                    date: document.querySelector('.letter-card[data-id="default"] .letter-date').textContent,
-                    privacy: 0
-                };
-            } else {
-                var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
-                letter = letters.find(function(l) { return l.id === letterId; });
-            }
+            var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
+            var letter = letters.find(function(l) { return l.id === letterId; });
             
             if (letter) {
                 if (!canViewLetter(letter)) {
@@ -5036,7 +5054,7 @@
                 document.getElementById('letter-detail-date').textContent = letter.date;
                 var detailEditBtn = document.getElementById('letter-detail-edit-btn');
                 if (detailEditBtn) {
-                    detailEditBtn.style.display = (currentUser && currentUser.role === 'editor') ? 'inline-block' : 'none';
+                    detailEditBtn.style.display = (currentUser && (currentUser.role === 'editor' || currentUser.role === 'admin')) ? 'inline-block' : 'none';
                 }
                 renderLetterDetailVoices(letterId);
                 document.getElementById('letter-detail-modal').style.display = 'flex';
@@ -5051,31 +5069,13 @@
             viewingLetterId = null;
         }
         
-        function getDefaultLetterMeta() {
-            var card = document.querySelector('.letter-card[data-id="default"]');
-            return {
-                id: 'default',
-                title: card ? card.querySelector('h3').textContent : '亲爱的你',
-                content: document.getElementById('letter-content').textContent,
-                date: card ? card.querySelector('.letter-date').textContent : '',
-                privacy: 0
-            };
-        }
-        
         function getLetterVoices(letterId) {
-            if (letterId === 'default') {
-                return loadFromStorage(STORAGE_KEYS.LETTER_VOICES_DEFAULT, []);
-            }
             var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
             var letter = letters.find(function(l) { return l.id === letterId; });
             return letter && letter.voices ? letter.voices.slice() : [];
         }
         
         function setLetterVoices(letterId, voices) {
-            if (letterId === 'default') {
-                saveToStorage(STORAGE_KEYS.LETTER_VOICES_DEFAULT, voices);
-                return;
-            }
             var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
             var idx = letters.findIndex(function(l) { return l.id === letterId; });
             if (idx === -1) {
@@ -5096,7 +5096,8 @@
         function canAddLetterVoice() {
             if (!currentUser || currentUser.role === 'admin') return false;
             if (!viewingLetterId) return false;
-            var letter = viewingLetterId === 'default' ? getDefaultLetterMeta() : loadFromStorage(STORAGE_KEYS.LETTERS, []).find(function(l) { return l.id === viewingLetterId; });
+            var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
+            var letter = letters.find(function(l) { return l.id === viewingLetterId; });
             return canViewLetter(letter);
         }
         
@@ -5361,19 +5362,7 @@
             
             closeLetterModal();
             
-            if (editingLetterId === 'default') {
-                document.getElementById('letter-content').textContent = content;
-                saveLetterContent(content);
-                
-                var defaultCard = document.querySelector('.letter-card[data-id="default"]');
-                if (defaultCard) {
-                    defaultCard.querySelector('h3').textContent = title;
-                    defaultCard.querySelector('.letter-preview').textContent = content.substring(0, 50) + '...';
-                }
-                
-                showToast('信件已更新');
-                syncAllDataToCloud();
-            } else if (editingLetterId) {
+            if (editingLetterId) {
                 var existIdx = letters.findIndex(function(l) { return l.id === editingLetterId; });
                 if (existIdx >= 0) {
                     letter.voices = letters[existIdx].voices || [];
@@ -5396,6 +5385,13 @@
             var card = document.querySelector(`.letter-card[data-id="${letter.id}"]`);
             if (card) {
                 card.onclick = function() { openLetterDetailModal(letter.id); };
+                var canEdit = currentUser && (currentUser.role === 'editor' || currentUser.role === 'admin');
+                var actionsHtml = canEdit ? `
+                        <div class="letter-actions">
+                            <button class="letter-action-btn" onclick="event.stopPropagation(); openEditLetterModal('${letter.id}')">编辑</button>
+                            <button class="letter-action-btn" onclick="event.stopPropagation(); deleteLetter('${letter.id}')">删除</button>
+                        </div>
+                    ` : '';
                 card.innerHTML = `
                     <div class="letter-card-header">
                         <h3>${letter.title}</h3>
@@ -5404,10 +5400,7 @@
                     <p class="letter-preview">${letter.content.substring(0, 50)}...</p>
                     <div class="letter-card-footer">
                         <span class="letter-date">${letter.date}</span>
-                        <div class="letter-actions">
-                            <button class="letter-action-btn" onclick="event.stopPropagation(); openEditLetterModal('${letter.id}')">编辑</button>
-                            <button class="letter-action-btn" onclick="event.stopPropagation(); deleteLetter('${letter.id}')">删除</button>
-                        </div>
+                        ${actionsHtml}
                     </div>
                 `;
             }
@@ -5420,10 +5413,17 @@
             card.dataset.id = letter.id;
             
             var userVipLevel = currentUser ? (currentUser.vipLevel || 0) : 0;
-            var canAccess = letter.privacy <= userVipLevel || currentUser.role === 'editor';
+            var canAccess = letter.privacy <= userVipLevel || currentUser.role === 'editor' || currentUser.role === 'admin';
+            var canEdit = currentUser && (currentUser.role === 'editor' || currentUser.role === 'admin');
             
             if (canAccess) {
                 card.onclick = function() { openLetterDetailModal(letter.id); };
+                var actionsHtml = canEdit ? `
+                        <div class="letter-actions">
+                            <button class="letter-action-btn" onclick="event.stopPropagation(); openEditLetterModal('${letter.id}')">编辑</button>
+                            <button class="letter-action-btn" onclick="event.stopPropagation(); deleteLetter('${letter.id}')">删除</button>
+                        </div>
+                    ` : '';
                 card.innerHTML = `
                     <div class="letter-card-header">
                         <h3>${letter.title}</h3>
@@ -5432,10 +5432,7 @@
                     <p class="letter-preview">${letter.content.substring(0, 50)}...</p>
                     <div class="letter-card-footer">
                         <span class="letter-date">${letter.date}</span>
-                        <div class="letter-actions">
-                            <button class="letter-action-btn" onclick="event.stopPropagation(); openEditLetterModal('${letter.id}')">编辑</button>
-                            <button class="letter-action-btn" onclick="event.stopPropagation(); deleteLetter('${letter.id}')">删除</button>
-                        </div>
+                        ${actionsHtml}
                     </div>
                 `;
             } else {
@@ -5467,30 +5464,24 @@
         }
         
         function deleteLetter(letterId) {
-            if (!currentUser || currentUser.role === 'viewer') {
-                showToast('只有编辑者可以删除信件');
+            if (!currentUser || (currentUser.role !== 'editor' && currentUser.role !== 'admin')) {
+                showToast('只有编辑者或管理员可以删除信件');
                 return;
             }
             
             if (!confirm('确定要删除这封信件吗？')) return;
             
-            if (letterId === 'default') {
-                document.getElementById('letter-content').textContent = '亲爱的你，\n\n分开的这些日子里，我每天都在想你...';
-                saveLetterContent(document.getElementById('letter-content').textContent);
-                showToast('信件已重置为默认内容');
-            } else {
-                var cards = document.querySelectorAll(`.letter-card[data-id="${letterId}"]`);
-                cards.forEach(function(card) {
-                    card.remove();
-                });
-                
-                var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
-                letters = letters.filter(function(l) { return l.id !== letterId; });
-                saveToStorage(STORAGE_KEYS.LETTERS, letters);
-                syncAllDataToCloud();
-                
-                showToast('信件已删除');
-            }
+            var cards = document.querySelectorAll(`.letter-card[data-id="${letterId}"]`);
+            cards.forEach(function(card) {
+                card.remove();
+            });
+            
+            var letters = loadFromStorage(STORAGE_KEYS.LETTERS, []);
+            letters = letters.filter(function(l) { return l.id !== letterId; });
+            saveToStorage(STORAGE_KEYS.LETTERS, letters);
+            syncAllDataToCloud();
+            
+            showToast('信件已删除');
         }
         
         function openNotifications() {
@@ -5912,6 +5903,18 @@
                     document.getElementById('login-container').style.display = 'none';
                     document.getElementById('main-container').style.display = 'none';
                     document.getElementById('admin-container').style.display = 'flex';
+                    
+                    // 停止登录音乐并隐藏按钮
+                    var loginBgm = document.getElementById('login-bgm');
+                    var loginMusicBtn = document.getElementById('login-music-btn');
+                    if (loginBgm) {
+                        loginBgm.pause();
+                        loginBgm.src = '';
+                    }
+                    if (loginMusicBtn) {
+                        loginMusicBtn.style.display = 'none';
+                    }
+                    
                     loadUsersFromCloud().then(function() {
                         loadPendingUsers();
                         loadUsers();
@@ -5922,7 +5925,20 @@
                 }
                 
                 document.getElementById('login-container').style.display = 'none';
+                
+                // 停止登录音乐并隐藏按钮
+                var loginBgm = document.getElementById('login-bgm');
+                var loginMusicBtn = document.getElementById('login-music-btn');
+                if (loginBgm) {
+                    loginBgm.pause();
+                    loginBgm.src = '';
+                }
+                if (loginMusicBtn) {
+                    loginMusicBtn.style.display = 'none';
+                }
+                
                 document.getElementById('main-container').style.display = 'block';
+                document.getElementById('music-btn').style.display = 'flex';
                 
                 updateCurrentUserHeader();
                 var roleSpan = document.getElementById('user-role');
@@ -5962,11 +5978,23 @@
                 }, 1000);
                 
             } else {
-                var errorEl = document.getElementById('login-error');
-                errorEl.classList.add('show');
-                setTimeout(function() {
-                    errorEl.classList.remove('show');
-                }, 3000);
+                // 用户存在但密码错误
+                if (USERS[username]) {
+                    var errorEl = document.getElementById('login-error');
+                    errorEl.textContent = '密码错误，请重试';
+                    errorEl.classList.add('show');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                    setTimeout(function() {
+                        errorEl.classList.remove('show');
+                    }, 3000);
+                } else {
+                    // 用户不存在，跳转到注册
+                    showToast('账户不存在，正在跳转到注册...');
+                    setTimeout(function() {
+                        showRegisterForm();
+                    }, 500);
+                }
             }
         }
         
@@ -6009,7 +6037,12 @@
                 if (defaultLetterActions) defaultLetterActions.style.display = 'none';
                 if (addLetterBtn) addLetterBtn.style.display = 'none';
                 
+            } else if (currentUser.role === 'editor') {
+                // 编辑者：可以开关音乐，但不能管理音乐
+                if (musicChangeBtn) musicChangeBtn.style.display = 'none';
             } else {
+                // 管理员（青泥）：可以管理音乐
+                if (musicChangeBtn) musicChangeBtn.style.display = 'flex';
                 editBtns.forEach(function(btn) {
                     btn.classList.remove('hidden');
                 });
@@ -6056,6 +6089,18 @@
             document.getElementById('music-btn').classList.remove('playing');
             document.getElementById('music-icon').innerHTML = '<path d="M8 5v14l11-7z"/>';
             
+            // 显示登录音乐按钮并加载登录音乐
+            var loginMusicBtn = document.getElementById('login-music-btn');
+            if (loginMusicBtn) {
+                loginMusicBtn.style.display = 'flex';
+                loginMusicBtn.classList.remove('playing');
+            }
+            var loginMusicIcon = document.getElementById('login-music-icon');
+            if (loginMusicIcon) {
+                loginMusicIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            }
+            loadLoginMusic();
+            
             showToast('已退出登录');
         }
         
@@ -6067,6 +6112,18 @@
             document.getElementById('login-container').style.display = 'flex';
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
+            
+            // 显示登录音乐按钮并加载登录音乐
+            var loginMusicBtn = document.getElementById('login-music-btn');
+            if (loginMusicBtn) {
+                loginMusicBtn.style.display = 'flex';
+                loginMusicBtn.classList.remove('playing');
+            }
+            var loginMusicIcon = document.getElementById('login-music-icon');
+            if (loginMusicIcon) {
+                loginMusicIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            }
+            loadLoginMusic();
             
             showToast('已退出管理系统');
         }
@@ -6084,6 +6141,7 @@
             if (targetContent) targetContent.style.display = 'block';
             if (tabName === 'pending') loadPendingUsers();
             else if (tabName === 'users') loadUsers();
+            else if (tabName === 'music') loadMusicSettings();
         }
         
         function updatePendingBadge() {
@@ -7206,6 +7264,31 @@
             reader.readAsText(file);
         }
         
+        var isLoginMusicPlaying = false;
+
+        function toggleLoginMusic() {
+            var loginBgm = document.getElementById('login-bgm');
+            var loginMusicBtn = document.getElementById('login-music-btn');
+            var loginMusicIcon = document.getElementById('login-music-icon');
+            
+            if (isLoginMusicPlaying) {
+                loginBgm.pause();
+                loginMusicBtn.classList.remove('playing');
+                loginMusicIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            } else {
+                if (loginBgm.src) {
+                    loginBgm.play().catch(function() {
+                        showToast('播放失败，请检查音乐文件');
+                    });
+                    loginMusicBtn.classList.add('playing');
+                    loginMusicIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                } else {
+                    showToast('暂无登录音乐');
+                }
+            }
+            isLoginMusicPlaying = !isLoginMusicPlaying;
+        }
+
         function toggleMusic() {
             var musicBtn = document.getElementById('music-btn');
             var musicIcon = document.getElementById('music-icon');
@@ -7227,7 +7310,84 @@
             isPlaying = !isPlaying;
         }
         
+        function loadLoginMusic() {
+            var loginBgm = document.getElementById('login-bgm');
+            var loginMusicUrl = loadFromStorage(STORAGE_KEYS.LOGIN_MUSIC_URL, '');
+            if (loginMusicUrl) {
+                loginBgm.src = loginMusicUrl;
+                loginBgm.play().catch(function() {
+                    console.log('登录音乐自动播放被阻止');
+                });
+            }
+        }
+        
+        function handleLoginMusicUpload(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var musicData = e.target.result;
+                saveToStorage(STORAGE_KEYS.LOGIN_MUSIC_URL, musicData);
+                
+                var loginBgm = document.getElementById('login-bgm');
+                loginBgm.src = musicData;
+                loginBgm.play().catch(function() {});
+                
+                document.getElementById('current-login-music-name').textContent = file.name;
+                showToast('登录音乐已设置');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function clearLoginMusic() {
+            if (!confirm('确定要清除登录音乐吗？')) return;
+            saveToStorage(STORAGE_KEYS.LOGIN_MUSIC_URL, '');
+            var loginBgm = document.getElementById('login-bgm');
+            loginBgm.src = '';
+            loginBgm.pause();
+            document.getElementById('current-login-music-name').textContent = '未设置';
+            showToast('登录音乐已清除');
+        }
+        
+        function handleBgmUpload(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var musicData = e.target.result;
+                saveToStorage(STORAGE_KEYS.MUSIC_URL, musicData);
+                
+                bgm.src = musicData;
+                document.getElementById('current-bgm-name').textContent = file.name;
+                showToast('背景音乐已设置');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function clearBgm() {
+            if (!confirm('确定要清除背景音乐吗？')) return;
+            saveToStorage(STORAGE_KEYS.MUSIC_URL, '');
+            bgm.src = '';
+            bgm.pause();
+            document.getElementById('current-bgm-name').textContent = '未设置';
+            showToast('背景音乐已清除');
+        }
+        
+        function loadMusicSettings() {
+            var loginMusicUrl = loadFromStorage(STORAGE_KEYS.LOGIN_MUSIC_URL, '');
+            document.getElementById('current-login-music-name').textContent = loginMusicUrl ? '已设置' : '未设置';
+            
+            var bgmUrl = loadFromStorage(STORAGE_KEYS.MUSIC_URL, '');
+            document.getElementById('current-bgm-name').textContent = bgmUrl ? '已设置' : '未设置';
+        }
+        
         function openMusicModal() {
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('只有管理员可以在此管理音乐');
+                return;
+            }
             var musicUrlInput = document.getElementById('music-url-input');
             musicUrlInput.value = bgm.src || defaultMusicUrl;
             document.getElementById('music-file-input').value = '';
@@ -7642,29 +7802,9 @@
             content.innerHTML = '';
         }
         
-        function closeEditModal() {
-            document.getElementById('edit-modal').classList.remove('show');
-        }
-        
-        async function saveLetterContent() {
-            var content = document.getElementById('edit-letter-text').value;
-            if (content.trim()) {
-                document.getElementById('letter-content').textContent = content;
-                saveToStorage(STORAGE_KEYS.LETTER_CONTENT, content);
-                await syncAllDataToCloud();
-                showToast('内容已保存并同步到云端');
-            }
-            closeEditModal();
-        }
-        
         async function loadSavedData() {
             updateDateTime();
             loadWeather();
-            
-            var letterContent = loadLetterContent();
-            if (letterContent) {
-                document.getElementById('letter-content').textContent = letterContent;
-            }
             
             var musicUrl = loadMusicUrl();
             if (musicUrl) {
@@ -7967,69 +8107,121 @@
                 }
             });
             
-            initCloudStorage();
-            initDB().then(function() {
-                autoLogin();
-            }).catch(function() {
-                autoLogin();
-            });
+            // 确保登录界面初始显示
+            document.getElementById('login-container').style.display = 'flex';
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('admin-container').style.display = 'none';
+            
+            // 显示登录音乐按钮
+            var loginMusicBtn = document.getElementById('login-music-btn');
+            if (loginMusicBtn) {
+                loginMusicBtn.style.display = 'flex';
+            }
+            
+            // 隐藏主界面音乐按钮
+            var musicBtn = document.getElementById('music-btn');
+            if (musicBtn) {
+                musicBtn.style.display = 'none';
+            }
+            
+            try {
+                initCloudStorage();
+                loadLoginMusic();
+                initDB().then(function() {
+                    autoLogin();
+                }).catch(function() {
+                    autoLogin();
+                });
+            } catch (e) {
+                console.error('初始化失败:', e);
+            }
         });
         
         function autoLogin() {
-            var savedUser = loadFromStorage(STORAGE_KEYS.LOGGED_USER, null);
-            if (savedUser && USERS[savedUser.username]) {
-                currentUser = {
-                    username: savedUser.username,
-                    role: USERS[savedUser.username].role,
-                    permissions: USERS[savedUser.username].permissions || { view: true, edit: false, upload: false, visitor: false, backup: false },
-                    vipLevel: USERS[savedUser.username].vipLevel || 0,
-                    avatar: USERS[savedUser.username].avatar || ''
-                };
-                saveToStorage(STORAGE_KEYS.LOGGED_USER, currentUser);
-                
-                document.getElementById('login-container').style.display = 'none';
-                
-                if (currentUser.role === 'admin') {
-                    document.getElementById('main-container').style.display = 'none';
-                    document.getElementById('admin-container').style.display = 'flex';
-                    loadUsersFromCloud().then(function() {
-                        loadPendingUsers();
-                        loadUsers();
-                        updatePendingBadge();
-                    });
-                    showToast('欢迎回来，青泥管理员');
-                    return;
-                }
-                
-                document.getElementById('main-container').style.display = 'block';
-                updateCurrentUserHeader();
-                var roleSpan = document.getElementById('user-role');
-                roleSpan.textContent = currentUser.role === 'editor' ? '编辑者' : '查看者';
-                if (currentUser.role === 'viewer') {
-                    roleSpan.className = 'role viewer-role';
-                } else {
-                    roleSpan.className = 'role';
-                }
-                
-                applyPermissions();
-                loadUsersFromCloud().then(function() {
-                    updateFriendRequestBadge();
-                });
-                loadSavedData();
-                startAutoSync();
-                showToast('欢迎回来，' + savedUser.username);
-                
-                setTimeout(function() {
-                    if (bgm.src) {
-                        bgm.play().then(function() {
-                            isPlaying = true;
-                            document.getElementById('music-btn').classList.add('playing');
-                            document.getElementById('music-icon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-                        }).catch(function() {
-                            
-                        });
+            try {
+                var savedUser = loadFromStorage(STORAGE_KEYS.LOGGED_USER, null);
+                if (savedUser && USERS[savedUser.username]) {
+                    currentUser = {
+                        username: savedUser.username,
+                        role: USERS[savedUser.username].role,
+                        permissions: USERS[savedUser.username].permissions || { view: true, edit: false, upload: false, visitor: false, backup: false },
+                        vipLevel: USERS[savedUser.username].vipLevel || 0,
+                        avatar: USERS[savedUser.username].avatar || ''
+                    };
+                    saveToStorage(STORAGE_KEYS.LOGGED_USER, currentUser);
+                    
+                    // 隐藏登录音乐按钮
+                    var loginMusicBtn = document.getElementById('login-music-btn');
+                    if (loginMusicBtn) {
+                        loginMusicBtn.style.display = 'none';
                     }
-                }, 1000);
+                    
+                    document.getElementById('login-container').style.display = 'none';
+                    
+                    if (currentUser.role === 'admin') {
+                        document.getElementById('main-container').style.display = 'none';
+                        document.getElementById('admin-container').style.display = 'flex';
+                        loadUsersFromCloud().then(function() {
+                            loadPendingUsers();
+                            loadUsers();
+                            updatePendingBadge();
+                        });
+                        showToast('欢迎回来，青泥管理员');
+                        return;
+                    }
+                    
+                    document.getElementById('main-container').style.display = 'block';
+                    document.getElementById('music-btn').style.display = 'flex';
+                    updateCurrentUserHeader();
+                    var roleSpan = document.getElementById('user-role');
+                    roleSpan.textContent = currentUser.role === 'editor' ? '编辑者' : '查看者';
+                    if (currentUser.role === 'viewer') {
+                        roleSpan.className = 'role viewer-role';
+                    } else {
+                        roleSpan.className = 'role';
+                    }
+                    
+                    applyPermissions();
+                    loadUsersFromCloud().then(function() {
+                        updateFriendRequestBadge();
+                    });
+                    loadSavedData();
+                    startAutoSync();
+                    showToast('欢迎回来，' + savedUser.username);
+                    
+                    setTimeout(function() {
+                        if (bgm.src) {
+                            bgm.play().then(function() {
+                                isPlaying = true;
+                                document.getElementById('music-btn').classList.add('playing');
+                                document.getElementById('music-icon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                            }).catch(function() {
+                                
+                            });
+                        }
+                    }, 1000);
+                } else {
+                    // 没有保存的用户或用户不存在，确保登录界面显示
+                    document.getElementById('login-container').style.display = 'flex';
+                    document.getElementById('main-container').style.display = 'none';
+                    document.getElementById('admin-container').style.display = 'none';
+                    // 显示登录音乐按钮
+                    var loginMusicBtn = document.getElementById('login-music-btn');
+                    if (loginMusicBtn) {
+                        loginMusicBtn.style.display = 'flex';
+                    }
+                }
+            } catch (e) {
+                console.error('自动登录失败:', e);
+                // 出错时确保显示登录界面
+                document.getElementById('login-container').style.display = 'flex';
+                document.getElementById('main-container').style.display = 'none';
+                document.getElementById('admin-container').style.display = 'none';
+                // 显示登录音乐按钮
+                var loginMusicBtn = document.getElementById('login-music-btn');
+                if (loginMusicBtn) {
+                    loginMusicBtn.style.display = 'flex';
+                }
             }
         }
     </script>
