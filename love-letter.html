@@ -3776,6 +3776,24 @@
                 <h1>温予皆过往</h1>
                 <p>欢迎回来</p>
             </div>
+            
+            <!-- 一键快速访问 -->
+            <button class="login-btn" onclick="quickAccess()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-bottom: 15px; font-size: 1.1rem;">
+                👀 一键快速访问
+            </button>
+            <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 20px; text-align: center;">
+                换设备时点击这里，无需输入账户密码
+            </div>
+            
+            <!-- 云端同步入口 -->
+            <div class="login-sync-section" onclick="openSyncSettings()" style="cursor: pointer; padding: 12px; background: rgba(255,107,157,0.1); border-radius: 12px; margin-bottom: 15px; text-align: center; border: 1px solid rgba(255,107,157,0.3);">
+                <div style="font-size: 1.2rem;">☁️</div>
+                <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">配置云端同步</div>
+                <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem;">换设备也能自动同步数据</div>
+            </div>
+            
+            <div style="color: rgba(255,255,255,0.4); font-size: 0.9rem; text-align: center; margin: 15px 0;">或登录管理</div>
+            
             <div class="form-group">
                 <label>账户</label>
                 <input type="text" id="username" placeholder="请输入账户" maxlength="4">
@@ -4255,6 +4273,28 @@
                 <div class="sync-status">
                     <span id="sync-status-icon">⚠️</span>
                     <span id="sync-status-text">未配置同步</span>
+                </div>
+                
+                <!-- 生成分享链接 -->
+                <div id="share-link-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <h4 style="color: #fff; margin-bottom: 12px;">🔗 生成分享链接</h4>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 12px;">
+                        生成链接后分享给朋友，他们打开就能直接访问（无需输入账户密码）
+                    </p>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="share-user-select" style="flex: 1; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);">
+                            <option value="visitor">👀 访客（仅查看）</option>
+                        </select>
+                        <button onclick="generateShareLink()" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 600;">
+                            生成链接
+                        </button>
+                    </div>
+                    <div id="share-link-result" style="margin-top: 12px; display: none;">
+                        <textarea id="share-link-output" readonly style="width: 100%; height: 60px; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); font-size: 0.85rem;"></textarea>
+                        <button onclick="copyShareLink()" style="margin-top: 8px; padding: 8px 16px; background: rgba(255,107,157,0.3); border: 1px solid rgba(255,107,157,0.5); border-radius: 8px; color: #fff; cursor: pointer;">
+                            📋 复制链接
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="sync-settings-footer">
@@ -4826,10 +4866,105 @@
             updateSyncSettingsStatus(!!GIST_ID);
             document.getElementById('sync-settings-modal').style.display = 'flex';
             if (GIST_ID) checkCloudConnection();
+            
+            // 如果已经配置了，只显示查看者分享链接
+            if (GIST_ID) {
+                document.getElementById('share-link-section').style.display = 'block';
+                document.getElementById('share-user-select').innerHTML = '<option value="visitor">👀 访客（仅查看）</option>';
+            }
         }
         
         function closeSyncSettings() {
             document.getElementById('sync-settings-modal').style.display = 'none';
+        }
+
+        function generateShareLink() {
+            var select = document.getElementById('share-user-select');
+            var userType = select.value;
+            var baseUrl = window.location.origin + window.location.pathname;
+            var shareUrl = baseUrl + '?access=' + userType + '&gist=' + GIST_ID;
+            document.getElementById('share-link-output').value = shareUrl;
+            document.getElementById('share-link-result').style.display = 'block';
+        }
+
+        function copyShareLink() {
+            var output = document.getElementById('share-link-output');
+            output.select();
+            document.execCommand('copy');
+            showToast('✅ 链接已复制到剪贴板');
+        }
+
+        function handleShareLinkAccess() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var accessType = urlParams.get('access');
+            var gistId = urlParams.get('gist');
+
+            if (accessType && gistId) {
+                // 保存Gist ID到localStorage，这样换设备后会自动加载
+                saveToStorage('gist_id', gistId);
+                reloadGistSettings();
+
+                // 根据访问类型设置用户
+                if (accessType === 'visitor') {
+                    currentUser = {
+                        username: '访客',
+                        role: 'viewer',
+                        permissions: { view: true, edit: false, upload: false, visitor: false, backup: false },
+                        vipLevel: 0,
+                        avatar: ''
+                    };
+                } else if (USERS[accessType]) {
+                    currentUser = {
+                        username: accessType,
+                        role: USERS[accessType].role,
+                        permissions: USERS[accessType].permissions || { view: true, edit: false, upload: false, visitor: false, backup: false },
+                        vipLevel: USERS[accessType].vipLevel || 0,
+                        avatar: USERS[accessType].avatar || ''
+                    };
+                }
+
+                saveToStorage(STORAGE_KEYS.LOGGED_USER, currentUser);
+
+                // 停止登录音乐并隐藏按钮
+                var loginBgm = document.getElementById('login-bgm');
+                var loginMusicBtn = document.getElementById('login-music-btn');
+                if (loginBgm) {
+                    loginBgm.pause();
+                    loginBgm.src = '';
+                }
+                if (loginMusicBtn) {
+                    loginMusicBtn.style.display = 'none';
+                }
+
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('main-container').style.display = 'block';
+                document.getElementById('music-btn').style.display = 'flex';
+
+                updateCurrentUserHeader();
+                var roleSpan = document.getElementById('user-role');
+                roleSpan.textContent = currentUser.role === 'editor' ? '编辑者' : (currentUser.role === 'admin' ? '管理员' : '查看者');
+                roleSpan.className = 'role viewer-role';
+
+                applyPermissions();
+                loadSavedData();
+                startAutoSync();
+
+                showToast('✅ 已自动配置云端同步');
+
+                // 尝试播放背景音乐
+                setTimeout(function() {
+                    if (bgm.src) {
+                        bgm.play().then(function() {
+                            isPlaying = true;
+                            document.getElementById('music-btn').classList.add('playing');
+                            document.getElementById('music-icon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                        }).catch(function() {});
+                    }
+                }, 1000);
+
+                return true;
+            }
+            return false;
         }
         
         function saveSyncSettings() {
@@ -5979,6 +6114,94 @@
                 star.style.setProperty('--max-opacity', Math.random() * 0.5 + 0.5);
                 starsContainer.appendChild(star);
             }
+        }
+        
+        function quickAccess() {
+            // 如果有配置Gist，先尝试加载用户数据
+            if (GIST_ID) {
+                loadUsersFromCloud().then(function() {
+                    performQuickAccess();
+                }).catch(function() {
+                    performQuickAccess();
+                });
+            } else {
+                performQuickAccess();
+            }
+        }
+
+        function performQuickAccess() {
+            // 尝试使用默认的查看者账户
+            if (USERS['黄倩']) {
+                // 使用黄倩账户登录
+                currentUser = {
+                    username: '黄倩',
+                    role: 'viewer',
+                    permissions: { view: true, edit: false, upload: false, visitor: false, backup: false },
+                    vipLevel: 0,
+                    avatar: ''
+                };
+            } else {
+                // 如果没有黄倩，使用第一个可用账户
+                var usernames = Object.keys(USERS);
+                if (usernames.length > 0) {
+                    var username = usernames[0];
+                    currentUser = {
+                        username: username,
+                        role: USERS[username].role,
+                        permissions: USERS[username].permissions || { view: true, edit: false, upload: false, visitor: false, backup: false },
+                        vipLevel: USERS[username].vipLevel || 0,
+                        avatar: USERS[username].avatar || ''
+                    };
+                } else {
+                    // 如果没有任何账户，作为访客访问
+                    currentUser = {
+                        username: '访客',
+                        role: 'viewer',
+                        permissions: { view: true, edit: false, upload: false, visitor: false, backup: false },
+                        vipLevel: 0,
+                        avatar: ''
+                    };
+                }
+            }
+            
+            saveToStorage(STORAGE_KEYS.LOGGED_USER, currentUser);
+            
+            // 停止登录音乐并隐藏按钮
+            var loginBgm = document.getElementById('login-bgm');
+            var loginMusicBtn = document.getElementById('login-music-btn');
+            if (loginBgm) {
+                loginBgm.pause();
+                loginBgm.src = '';
+            }
+            if (loginMusicBtn) {
+                loginMusicBtn.style.display = 'none';
+            }
+            
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('main-container').style.display = 'block';
+            document.getElementById('music-btn').style.display = 'flex';
+            
+            updateCurrentUserHeader();
+            var roleSpan = document.getElementById('user-role');
+            roleSpan.textContent = currentUser.role === 'editor' ? '编辑者' : (currentUser.role === 'admin' ? '管理员' : '查看者');
+            roleSpan.className = 'role viewer-role';
+            
+            applyPermissions();
+            loadSavedData();
+            startAutoSync();
+            
+            showToast('欢迎访问 ' + currentUser.username);
+            
+            // 尝试播放背景音乐
+            setTimeout(function() {
+                if (bgm.src) {
+                    bgm.play().then(function() {
+                        isPlaying = true;
+                        document.getElementById('music-btn').classList.add('playing');
+                        document.getElementById('music-icon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                    }).catch(function() {});
+                }
+            }, 1000);
         }
         
         function handleLogin() {
@@ -8379,9 +8602,16 @@
                 initCloudStorage();
                 loadLoginMusic();
                 initDB().then(function() {
+                    // 先检查是否是分享链接访问
+                    if (handleShareLinkAccess()) {
+                        return; // 如果是分享链接，已经处理完登录
+                    }
                     autoLogin();
                 }).catch(function() {
-                    autoLogin();
+                    // 即使数据库失败，也尝试处理分享链接或自动登录
+                    if (!handleShareLinkAccess()) {
+                        autoLogin();
+                    }
                 });
             } catch (e) {
                 console.error('初始化失败:', e);
