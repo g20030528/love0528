@@ -3650,12 +3650,12 @@
             </div>
             <div class="form-group">
                 <label>账户</label>
-                <input type="text" id="username" placeholder="请输入账户">
+                <input type="text" id="username" placeholder="请输入账户" maxlength="4">
                 <span class="form-hint">提示: 姓名 (中文)</span>
             </div>
             <div class="form-group">
                 <label>密码</label>
-                <input type="password" id="password" placeholder="请输入密码">
+                <input type="password" id="password" placeholder="请输入密码" maxlength="4">
                 <span class="form-hint">提示: 生日 (4位数)</span>
             </div>
             <button class="login-btn" onclick="handleLogin()">登 录</button>
@@ -3671,12 +3671,12 @@
             </div>
             <div class="form-group">
                 <label>姓名</label>
-                <input type="text" id="register-username" placeholder="请输入姓名（中文，最多4个字符）">
+                <input type="text" id="register-username" placeholder="请输入姓名（中文，最多4个字符）" maxlength="4">
                 <span class="form-hint">提示: 中文姓名，最多4个字符</span>
             </div>
             <div class="form-group">
                 <label>密码</label>
-                <input type="password" id="register-password" placeholder="请输入密码（4位数字）">
+                <input type="password" id="register-password" placeholder="请输入密码（4位数字）" maxlength="4" inputmode="numeric">
                 <span class="form-hint">提示: 4位数字密码</span>
             </div>
             <button class="login-btn" onclick="handleRegister()">提交注册</button>
@@ -4305,7 +4305,7 @@
         var USERS = {
             '黄倩': { password: '0829', role: 'viewer', permissions: { view: true, edit: false, upload: false, visitor: false, backup: false }, vipLevel: 0 },
             '龚建东': { password: '0528', role: 'editor', permissions: { view: true, edit: true, upload: true, visitor: true, backup: true }, vipLevel: 2 },
-            '青泥': { password: '0528', role: 'admin', permissions: { view: false, edit: false, upload: false, visitor: false, backup: false }, vipLevel: 0 }
+            '青泥': { password: '0528', role: 'admin',  permissions: { view: true, edit: true, upload: true, visitor: true, backup: true }, vipLevel: 2 }
         };
         
         var currentUser = null;
@@ -4383,7 +4383,10 @@
         function saveMediaToDB(mediaItem) {
             return new Promise(function(resolve, reject) {
                 if (!db) {
-                    reject('DB not initialized');
+                    var mediaList = loadFromStorage('media_list', []);
+                    mediaList.push(mediaItem);
+                    saveToStorage('media_list', mediaList);
+                    resolve();
                     return;
                 }
                 var transaction = db.transaction(['media'], 'readwrite');
@@ -4397,7 +4400,8 @@
         function getAllMediaFromDB() {
             return new Promise(function(resolve, reject) {
                 if (!db) {
-                    reject('DB not initialized');
+                    var mediaList = loadFromStorage('media_list', []);
+                    resolve(mediaList);
                     return;
                 }
                 var transaction = db.transaction(['media'], 'readonly');
@@ -4413,7 +4417,10 @@
         function deleteMediaFromDB(id) {
             return new Promise(function(resolve, reject) {
                 if (!db) {
-                    reject('DB not initialized');
+                    var mediaList = loadFromStorage('media_list', []);
+                    mediaList = mediaList.filter(function(item) { return item.id !== id; });
+                    saveToStorage('media_list', mediaList);
+                    resolve();
                     return;
                 }
                 var transaction = db.transaction(['media'], 'readwrite');
@@ -4967,6 +4974,11 @@
         }
         
         function openEditLetterModal(letterId) {
+            if (!currentUser || currentUser.role === 'viewer') {
+                showToast('只有编辑者可以编辑信件');
+                return;
+            }
+            
             editingLetterId = letterId;
             document.getElementById('letter-modal-title').textContent = '编辑信件';
             
@@ -5455,6 +5467,11 @@
         }
         
         function deleteLetter(letterId) {
+            if (!currentUser || currentUser.role === 'viewer') {
+                showToast('只有编辑者可以删除信件');
+                return;
+            }
+            
             if (!confirm('确定要删除这封信件吗？')) return;
             
             if (letterId === 'default') {
@@ -6409,6 +6426,43 @@
         function showRegisterForm() {
             document.querySelector('.login-box').style.display = 'none';
             document.getElementById('register-box').style.display = 'block';
+            
+            // 清空输入框
+            document.getElementById('register-username').value = '';
+            document.getElementById('register-password').value = '';
+            document.getElementById('register-error').style.display = 'none';
+            
+            // 添加输入限制
+            var usernameInput = document.getElementById('register-username');
+            var passwordInput = document.getElementById('register-password');
+            
+            // 移除旧的监听器（如果有）
+            usernameInput.oninput = null;
+            passwordInput.oninput = null;
+            
+            // 用户名：只允许中文，最多4个字符
+            usernameInput.oninput = function(e) {
+                var value = e.target.value;
+                var filtered = value.replace(/[^\u4e00-\u9fa5]/g, '');
+                if (filtered.length > 4) {
+                    filtered = filtered.slice(0, 4);
+                }
+                if (value !== filtered) {
+                    e.target.value = filtered;
+                }
+            };
+            
+            // 密码：只允许数字，最多4个字符
+            passwordInput.oninput = function(e) {
+                var value = e.target.value;
+                var filtered = value.replace(/[^\d]/g, '');
+                if (filtered.length > 4) {
+                    filtered = filtered.slice(0, 4);
+                }
+                if (value !== filtered) {
+                    e.target.value = filtered;
+                }
+            };
         }
         
         function hideRegisterForm() {
@@ -6420,55 +6474,74 @@
         }
         
         function handleRegister() {
-            var username = document.getElementById('register-username').value.trim();
-            var password = document.getElementById('register-password').value.trim();
-            var errorEl = document.getElementById('register-error');
-            
-            var chineseRegex = /^[\u4e00-\u9fa5]{1,4}$/;
-            var passwordRegex = /^\d{4}$/;
-            
-            if (!chineseRegex.test(username)) {
-                errorEl.textContent = '姓名必须是中文，最多4个字符';
-                errorEl.style.display = 'block';
-                return;
+            try {
+                var username = document.getElementById('register-username').value.trim();
+                var password = document.getElementById('register-password').value.trim();
+                var errorEl = document.getElementById('register-error');
+                
+                // 验证
+                if (!username) {
+                    errorEl.textContent = '请输入姓名';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                if (!password) {
+                    errorEl.textContent = '请输入密码';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                var chineseRegex = /^[\u4e00-\u9fa5]{1,4}$/;
+                var passwordRegex = /^\d{4}$/;
+                
+                if (!chineseRegex.test(username)) {
+                    errorEl.textContent = '姓名必须是中文，最多4个字符';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                if (!passwordRegex.test(password)) {
+                    errorEl.textContent = '密码必须是4位数字';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                if (USERS[username]) {
+                    errorEl.textContent = '该用户名已存在';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                var pendingUsers = loadFromStorage(STORAGE_KEYS.PENDING_USERS, []);
+                var exists = pendingUsers.some(function(user) {
+                    return user.username === username;
+                });
+                
+                if (exists) {
+                    errorEl.textContent = '该用户名已提交注册申请，请等待审核';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                // 保存注册申请
+                var newPending = {
+                    id: Date.now().toString(),
+                    username: username,
+                    password: password,
+                    submitTime: new Date().toLocaleString('zh-CN'),
+                    timestamp: Date.now()
+                };
+                
+                pendingUsers.push(newPending);
+                saveToStorage(STORAGE_KEYS.PENDING_USERS, pendingUsers);
+                
+                showToast('注册申请已提交，请等待管理员审核');
+                hideRegisterForm();
+            } catch (e) {
+                console.error('注册失败:', e);
+                alert('注册失败: ' + e.message);
             }
-            
-            if (!passwordRegex.test(password)) {
-                errorEl.textContent = '密码必须是4位数字';
-                errorEl.style.display = 'block';
-                return;
-            }
-            
-            if (USERS[username]) {
-                errorEl.textContent = '该用户名已存在';
-                errorEl.style.display = 'block';
-                return;
-            }
-            
-            var pendingUsers = loadFromStorage(STORAGE_KEYS.PENDING_USERS, []);
-            var exists = pendingUsers.some(function(user) {
-                return user.username === username;
-            });
-            
-            if (exists) {
-                errorEl.textContent = '该用户名已提交注册申请，请等待审核';
-                errorEl.style.display = 'block';
-                return;
-            }
-            
-            var newPending = {
-                id: Date.now().toString(),
-                username: username,
-                password: password,
-                submitTime: new Date().toLocaleString('zh-CN'),
-                timestamp: Date.now()
-            };
-            
-            pendingUsers.push(newPending);
-            saveToStorage(STORAGE_KEYS.PENDING_USERS, pendingUsers);
-            
-            showToast('注册申请已提交，请等待管理员审核');
-            hideRegisterForm();
         }
         
         function loadPendingUsers() {
@@ -7375,10 +7448,12 @@
                         type: 'image',
                         src: result.url,
                         key: result.key,
-                        name: file.name
+                        name: file.name,
+                        privacy: 0,
+                        author: currentUser ? currentUser.username : ''
                     };
                     await saveMediaToDB(mediaItem);
-                    addMediaToGallery(result.url, 'image', file.name, mediaItem.id);
+                    loadMediaGallery();
                     syncAllDataToCloud();
                     showToast('图片上传成功');
                 } else {
@@ -7409,10 +7484,12 @@
                         type: 'video',
                         src: result.url,
                         key: result.key,
-                        name: file.name
+                        name: file.name,
+                        privacy: 0,
+                        author: currentUser ? currentUser.username : ''
                     };
                     await saveMediaToDB(mediaItem);
-                    addMediaToGallery(result.url, 'video', file.name, mediaItem.id);
+                    loadMediaGallery();
                     syncAllDataToCloud();
                     showToast('视频上传成功');
                 } else {
@@ -7563,12 +7640,6 @@
             var content = document.getElementById('media-viewer-content');
             viewer.classList.remove('show');
             content.innerHTML = '';
-        }
-        
-        function openEditLetterModal() {
-            var content = document.getElementById('letter-content').textContent;
-            document.getElementById('edit-letter-text').value = content;
-            document.getElementById('edit-modal').classList.add('show');
         }
         
         function closeEditModal() {
