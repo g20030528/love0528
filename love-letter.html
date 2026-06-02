@@ -4748,8 +4748,8 @@
     <script>
         var USERS = {
             '黄倩': { password: '0829', role: 'viewer', permissions: { view: true, edit: false, upload: false, visitor: false, backup: false }, vipLevel: 0 },
-            '龚建东': { password: '0528', role: 'editor', permissions: { view: true, edit: true, upload: true, visitor: true, backup: true }, vipLevel: 2 },
-            '青泥': { password: '0528', role: 'admin', permissions: { view: false, edit: false, upload: false, visitor: false, backup: false }, vipLevel: 0 }
+            '龚建东': { password: '0528', role: 'editor', permissions: { view: true, edit: true, upload: true, visitor: true, backup: false }, vipLevel: 2 },
+            '青泥': { password: '0528', role: 'admin', permissions: { view: true, edit: true, upload: true, visitor: true, backup: true }, vipLevel: 0 }
         };
         
         var currentUser = null;
@@ -5148,6 +5148,8 @@
             await loadAllDataFromCloud();
         }
         
+        // 先禁用自动同步，避免不必要的GitHub API调用
+        /*
         var lastCloudSyncTime = 0;
         var lastCloudDataHash = '';
         
@@ -5202,6 +5204,7 @@
                 autoSyncInterval = null;
             }
         }
+        */
         
                 async function syncAllDataToCloud() {
             if (!GIST_ID) {
@@ -6511,8 +6514,7 @@
                         loadUsers();
                         updatePendingBadge();
                     });
-                    autoPullFromCloud();
-                    showToast('欢迎青泥管理员');
+                    showToast('欢迎' + username + '管理员');
                     return;
                 }
                 
@@ -6541,8 +6543,6 @@
                     updateFriendRequestBadge();
                 });
                 loadSavedData();
-                startAutoSync();
-                autoPullFromCloud();
                 showToast('欢迎回来，' + username);
                 
                 setTimeout(function() {
