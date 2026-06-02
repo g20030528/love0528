@@ -4791,6 +4791,7 @@
         var GIST_USERS_FILE = 'love-letter-users.json';
         var GIST_ID = '';
         var GITHUB_TOKEN = '';
+        var DEFAULT_GIST_ID = 'c7f8f582aecf303baeecbf5d1a6073d6'; // 所有用户共享的Gist ID
         var cloudStorageAvailable = false;
         var isSyncing = false;
         
@@ -4913,7 +4914,7 @@
         }
         
         function reloadGistSettings() {
-            GIST_ID = loadFromStorage('gist_id', '');
+            GIST_ID = loadFromStorage('gist_id', '') || DEFAULT_GIST_ID;
             GITHUB_TOKEN = loadFromStorage('github_token', '');
             cloudStorageAvailable = !!GIST_ID;
         }
