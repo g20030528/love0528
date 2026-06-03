@@ -4775,6 +4775,18 @@
         var defaultMusicUrl = '';
         var lastSyncTime = 0;
         var syncInterval = null;
+        var debounceSyncTimeout = null;
+        
+        function debounceSyncToCloud() {
+            if (debounceSyncTimeout) {
+                clearTimeout(debounceSyncTimeout);
+            }
+            debounceSyncTimeout = setTimeout(function() {
+                if (currentUser && GIST_ID && GITHUB_TOKEN) {
+                    syncAllDataToCloud().catch(function() {});
+                }
+            }, 5000);
+        }
         
         var STORAGE_KEYS = {
             LETTER_CONTENT: 'love_letter_content',
@@ -5052,13 +5064,20 @@
         }
         
         async function uploadFileToCloud(file, folder) {
-            if (file.size > 10 * 1024 * 1024) {
-                showToast('文件大小不能超过10MB');
+            if (file.size > 50 * 1024 * 1024) {
+                showToast('文件大小不能超过50MB');
                 return null;
             }
             return new Promise(function(resolve) {
                 if (file.type.startsWith('image/')) {
                     compressImage(file, function(dataUrl) {
+                        resolve({
+                            url: dataUrl,
+                            key: folder + '/' + Date.now() + '-' + file.name
+                        });
+                    });
+                } else if (file.type.startsWith('video/')) {
+                    compressVideo(file, function(dataUrl) {
                         resolve({
                             url: dataUrl,
                             key: folder + '/' + Date.now() + '-' + file.name
@@ -5105,6 +5124,82 @@
                     callback(dataUrl);
                 };
                 img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function compressVideo(file, callback) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var video = document.createElement('video');
+                video.onloadedmetadata = function() {
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    
+                    var maxWidth = 960;
+                    var maxHeight = 540;
+                    var width = video.videoWidth;
+                    var height = video.videoHeight;
+                    
+                    if (width > height && width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    } else if (height > maxHeight) {
+                        width = (width * maxHeight) / height;
+                        height = maxHeight;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    var mediaRecorder;
+                    var chunks = [];
+                    var stream = canvas.captureStream(15);
+                    
+                    var mimeType = 'video/webm;codecs=vp8,opus';
+                    if (MediaRecorder.isTypeSupported(mimeType)) {
+                        mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+                    } else {
+                        mediaRecorder = new MediaRecorder(stream);
+                    }
+                    
+                    mediaRecorder.ondataavailable = function(e) {
+                        if (e.data.size > 0) {
+                            chunks.push(e.data);
+                        }
+                    };
+                    
+                    mediaRecorder.onstop = function() {
+                        var blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+                        var videoReader = new FileReader();
+                        videoReader.onload = function(evt) {
+                            callback(evt.target.result);
+                        };
+                        videoReader.readAsDataURL(blob);
+                    };
+                    
+                    mediaRecorder.start();
+                    
+                    var startTime = Date.now();
+                    var duration = video.duration;
+                    
+                    function drawFrame() {
+                        if (Date.now() - startTime >= duration * 1000 || !mediaRecorder.state === 'recording') {
+                            mediaRecorder.stop();
+                            return;
+                        }
+                        ctx.drawImage(video, 0, 0, width, height);
+                        requestAnimationFrame(drawFrame);
+                    }
+                    
+                    video.play().then(function() {
+                        drawFrame();
+                    }).catch(function() {
+                        showToast('视频压缩失败，使用原始视频');
+                        callback(e.target.result);
+                    });
+                };
+                video.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -8023,7 +8118,7 @@
                     };
                     await saveMediaToDB(mediaItem);
                     addMediaToGallery(result.url, 'image', file.name, mediaItem.id);
-                    syncAllDataToCloud();
+                    debounceSyncToCloud();
                     showToast('图片上传成功');
                 } else {
                     showToast('上传失败，请重试');
@@ -8057,7 +8152,7 @@
                     };
                     await saveMediaToDB(mediaItem);
                     addMediaToGallery(result.url, 'video', file.name, mediaItem.id);
-                    syncAllDataToCloud();
+                    debounceSyncToCloud();
                     showToast('视频上传成功');
                 } else {
                     showToast('上传失败，请重试');
