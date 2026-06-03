@@ -4784,7 +4784,10 @@
             LETTER_VOICES_DEFAULT: 'love_letter_default_voices',
             LETTERS: 'love_letter_letters',
             FRIENDS: 'love_letter_friends',
-            LOGGED_USER: 'love_letter_logged_user'
+            LOGGED_USER: 'love_letter_logged_user',
+            CURRENT_USER: 'love_letter_current_user',
+            PENDING_USERS: 'love_letter_pending_users',
+            LOGIN_ATTEMPTS: 'love_letter_login_attempts'
         };
         
         var GIST_DATA_FILE = 'love-letter-data.json';
@@ -7094,7 +7097,9 @@
             pendingUsers.push(newPending);
             saveToStorage(STORAGE_KEYS.PENDING_USERS, pendingUsers);
             
-            syncAllDataToCloud().then(function() {
+            saveUsersToCloud().then(function() {
+                return syncAllDataToCloud();
+            }).then(function() {
                 showToast('注册申请已提交，请等待管理员审核');
                 hideRegisterForm();
             }).catch(function() {
@@ -8581,8 +8586,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             setupWeChatCompatibility();
             
-            localStorage.removeItem('love-letter-logged-user');
-            localStorage.removeItem('love-letter-current-user');
+            localStorage.removeItem(STORAGE_KEYS.LOGGED_USER);
+            localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
             currentUser = null;
             createStars();
             
