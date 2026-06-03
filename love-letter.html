@@ -3802,6 +3802,42 @@
             margin-top: 20px;
         }
         
+        .preset-music-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .preset-music-item {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(255,107,157,0.1), rgba(192,132,252,0.1));
+            border: 1px solid rgba(255,107,157,0.2);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .preset-music-item:hover {
+            background: linear-gradient(135deg, rgba(255,107,157,0.2), rgba(192,132,252,0.2));
+            border-color: rgba(255,107,157,0.4);
+            transform: translateX(5px);
+        }
+        
+        .music-name {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .music-artist {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+        }
+        
         .music-admin-card {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
@@ -4250,43 +4286,65 @@
                 <div class="admin-tab-content" id="admin-tab-music" style="display: none;">
                     <div class="admin-page-header">
                         <h2 class="admin-section-title">🎵 音乐管理</h2>
-                        <p class="admin-section-desc">管理网站背景音乐，可以设置登录页面和主页面的背景音乐。</p>
+                        <p class="admin-section-desc">快速配置背景音乐，从下方选择或上传音乐。</p>
                     </div>
                     
                     <div class="music-admin-container">
                         <div class="music-admin-card">
-                            <h3>🎼 主页面背景音乐</h3>
+                            <h3>📝 选择预设音乐</h3>
+                            <p style="margin-bottom: 15px; color: rgba(255,255,255,0.7); font-size: 0.9rem;">直接点击选择，立即生效！</p>
+                            <div class="preset-music-list" id="preset-music-list">
+                                <button type="button" class="preset-music-item" onclick="selectPresetMusic('https://music.163.com/song/media/outer/url?id=186016.mp3', '夜曲')">
+                                    <span class="music-name">🎵 夜曲</span>
+                                    <span class="music-artist">周杰伦</span>
+                                </button>
+                                <button type="button" class="preset-music-item" onclick="selectPresetMusic('https://music.163.com/song/media/outer/url?id=55152619.mp3', '纸短情长')">
+                                    <span class="music-name">📝 纸短情长</span>
+                                    <span class="music-artist">烟把儿乐队</span>
+                                </button>
+                                <button type="button" class="preset-music-item" onclick="selectPresetMusic('https://music.163.com/song/media/outer/url?id=28717119.mp3', '告白气球')">
+                                    <span class="music-name">🎈 告白气球</span>
+                                    <span class="music-artist">周杰伦</span>
+                                </button>
+                                <button type="button" class="preset-music-item" onclick="selectPresetMusic('https://music.163.com/song/media/outer/url?id=418602043.mp3', '等你下课')">
+                                    <span class="music-name">🏫 等你下课</span>
+                                    <span class="music-artist">周杰伦</span>
+                                </button>
+                                <button type="button" class="preset-music-item" onclick="selectPresetMusic('https://music.163.com/song/media/outer/url?id=469574407.mp3', '樱花树下的约定')">
+                                    <span class="music-name">🌸 樱花树下的约定</span>
+                                    <span class="music-artist">MC康乐</span>
+                                </button>
+                                <button type="button" class="preset-music-item" onclick="selectPresetMusic('https://music.163.com/song/media/outer/url?id=185907.mp3', '七里香')">
+                                    <span class="music-name">🌸 七里香</span>
+                                    <span class="music-artist">周杰伦</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="music-admin-card">
+                            <h3>✨ 自定义音乐</h3>
                             <div class="music-input-group">
                                 <label>音乐URL</label>
-                                <input type="text" id="admin-music-url" class="admin-input" placeholder="输入背景音乐URL..." onchange="previewAdminMusic()">
-                                <button type="button" class="admin-btn-secondary" onclick="previewAdminMusic()">预览</button>
+                                <input type="text" id="admin-music-url" class="admin-input" placeholder="输入音乐链接...">
                             </div>
                             <div class="music-preview" id="music-preview-main">
                                 <audio id="admin-music-player" controls style="width: 100%; margin-top: 10px; display: none;"></audio>
                             </div>
-                            <button type="button" class="admin-btn-primary" onclick="saveMainMusic()">保存背景音乐</button>
-                        </div>
-                        
-                        <div class="music-admin-card">
-                            <h3>🎵 登录页面背景音乐</h3>
-                            <div class="music-input-group">
-                                <label>音乐URL</label>
-                                <input type="text" id="admin-login-music-url" class="admin-input" placeholder="输入登录页面背景音乐URL...">
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <button type="button" class="admin-btn-secondary" onclick="previewAdminMusic()">试听</button>
+                                <button type="button" class="admin-btn-primary" onclick="saveMainMusic()">设为背景音乐</button>
                             </div>
-                            <button type="button" class="admin-btn-primary" onclick="saveLoginMusic()">保存登录背景音乐</button>
                         </div>
                         
                         <div class="music-admin-card">
-                            <h3>📋 当前配置</h3>
-                            <div class="music-info-item">
-                                <span class="music-info-label">当前背景音乐:</span>
+                            <h3>📋 当前设置</h3>
+                            <div class="music-info-item" style="padding: 15px; background: rgba(255,107,157,0.1); border-radius: 10px;">
+                                <span class="music-info-label">当前音乐:</span>
                                 <span class="music-info-value" id="current-main-music">未设置</span>
                             </div>
-                            <div class="music-info-item">
-                                <span class="music-info-label">登录页音乐:</span>
-                                <span class="music-info-value" id="current-login-music">未设置</span>
+                            <div style="margin-top: 15px;">
+                                <button type="button" class="admin-btn-danger" onclick="clearMusic()" style="width: 100%;">🗑️ 清除音乐</button>
                             </div>
-                            <button type="button" class="admin-btn-secondary" onclick="loadCurrentMusicSettings()">刷新配置</button>
                         </div>
                     </div>
                 </div>
@@ -8775,13 +8833,15 @@
         // ===== 管理员音乐管理 =====
         function loadCurrentMusicSettings() {
             var mainMusic = loadMusicUrl();
-            var loginMusic = localStorage.getItem('love-letter-login-music-url') || '未设置';
-            
             document.getElementById('current-main-music').textContent = mainMusic || '未设置';
-            document.getElementById('current-login-music').textContent = loginMusic;
-            
             document.getElementById('admin-music-url').value = mainMusic || '';
-            document.getElementById('admin-login-music-url').value = loginMusic === '未设置' ? '' : loginMusic;
+        }
+        
+        function selectPresetMusic(url, name) {
+            document.getElementById('admin-music-url').value = url;
+            saveMusicUrl(url);
+            loadCurrentMusicSettings();
+            showToast('✓ 已选择：' + name);
         }
         
         function previewAdminMusic() {
@@ -8789,7 +8849,7 @@
             var player = document.getElementById('admin-music-player');
             
             if (!url) {
-                showToast('请输入音乐URL');
+                showToast('请先选择或输入音乐');
                 return;
             }
             
@@ -8802,26 +8862,20 @@
             var url = document.getElementById('admin-music-url').value;
             
             if (!url) {
-                showToast('请输入音乐URL');
+                showToast('请先选择或输入音乐');
                 return;
             }
             
             saveMusicUrl(url);
             loadCurrentMusicSettings();
-            showToast('✓ 背景音乐已保存');
+            showToast('✓ 背景音乐已设置');
         }
         
-        function saveLoginMusic() {
-            var url = document.getElementById('admin-login-music-url').value;
-            
-            if (!url) {
-                localStorage.removeItem('love-letter-login-music-url');
-            } else {
-                localStorage.setItem('love-letter-login-music-url', url);
-            }
-            
+        function clearMusic() {
+            saveMusicUrl('');
             loadCurrentMusicSettings();
-            showToast('✓ 登录背景音乐已保存');
+            document.getElementById('admin-music-player').style.display = 'none';
+            showToast('✓ 已清除音乐');
         }
     </script>
 </body>
